@@ -56,7 +56,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'font-awesome-sass',               '~> 6.3'
 
-  s.add_dependency 'highline',                        '~> 2.1'
+  s.add_dependency 'highline',                        '>= 2.1', '< 4.0'
   s.add_dependency 'bazaar',                          '~> 0.0'
   s.add_dependency 'json-schema',                     '~> 3.0'
 
