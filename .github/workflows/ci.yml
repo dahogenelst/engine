@@ -25,7 +25,7 @@ jobs:
         image: mongo:8.0
         ports: ['27017:27017']
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
@@ -47,7 +47,7 @@ jobs:
     if: (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && github.repository_owner == 'dahogenelst'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           token: ${{ secrets.CASCADE_TOKEN }}  # a PAT, so the push and PR below trigger CI
       - uses: ruby/setup-ruby@v1
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: meta
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@v3
       - if: steps.meta.outputs.update-type != 'version-update:semver-major'
         env:
           GH_TOKEN: ${{ secrets.CASCADE_TOKEN }}  # a PAT, so the merge push triggers CI and the cascade
