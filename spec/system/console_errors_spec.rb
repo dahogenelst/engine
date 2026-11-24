@@ -2,9 +2,13 @@
 # collects the browser console errors, so JS regressions show up in CI.
 describe 'Browser console', js: true do
 
-  before { create_full_site }
-
   let(:errors) { {} }
+
+  before do
+    # the browser log survives between examples; drop what earlier specs left behind
+    Features::Matchers::HaveNoJavascriptError.errors(page)
+    check('setup (sign in, create site)') { create_full_site }
+  end
 
   def check(label)
     yield if block_given?
