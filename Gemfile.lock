@@ -294,7 +294,6 @@ GEM
       launchy (>= 2.1, < 4.0)
       mail (~> 2.7)
     erb (6.0.7)
-    error_highlight (0.7.2)
     erubi (1.13.1)
     execjs (2.10.2)
       json (>= 2)
@@ -618,7 +617,6 @@ DEPENDENCIES
   database_cleaner-mongoid (~> 2.0)
   debug (~> 1.9)
   email_spec (~> 2.2)
-  error_highlight (>= 0.4.0)
   factory_bot_rails (~> 6.4)
   json_spec (~> 1.1)
   locomotivecms!
@@ -635,4 +633,4 @@ DEPENDENCIES
   webdrivers (~> 5.3)
 
 BUNDLED WITH
-   2.4.22
+   4.1.0

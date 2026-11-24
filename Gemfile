@@ -13,7 +13,6 @@ gem 'abbrev'
 group :development do
   gem 'debug', '~> 1.9'
   gem 'web-console', '~> 4.2'
-  gem 'error_highlight', '>= 0.4.0'
 end
 
 group :development, :test do 
