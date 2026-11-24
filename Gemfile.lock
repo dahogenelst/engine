@@ -12,12 +12,13 @@ GIT
 
 GIT
   remote: https://github.com/dahogenelst/custom_fields.git
-  revision: fdf0d6ef56bab3e66c28600749db3812327c4473
+  revision: ac808c7b2dc08443e8d68ba74ed940bef5637fc6
   branch: master
   specs:
     custom_fields (2.14.0.alpha1)
       activesupport (>= 7.1, < 9)
       bcrypt (~> 3.1)
+      carrierwave (~> 3.1)
       carrierwave-mongoid (~> 1.6)
       monetize (>= 1.12, < 3)
       mongoid (>= 8, < 10)
@@ -303,7 +304,7 @@ GEM
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
     ffi (1.17.4-arm64-darwin)
-    ffi (1.17.4-x86_64-darwin)
+    ffi (1.17.4-x86_64-linux-gnu)
     flash_cookie_session (1.1.6)
       rails (>= 3.0)
     font-awesome-sass (6.7.2)
@@ -430,7 +431,7 @@ GEM
     nio4r (2.7.5)
     nokogiri (1.19.7-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.7-x86_64-darwin)
+    nokogiri (1.19.7-x86_64-linux-gnu)
       racc (~> 1.4)
     origin (2.3.1)
     orm_adapter (0.5.0)
@@ -444,7 +445,7 @@ GEM
       prettyprint
     prettyprint (0.2.1)
     prism (2.1.0-arm64-darwin)
-    prism (2.1.0-x86_64-darwin)
+    prism (2.1.0-x86_64-linux-gnu)
     public_suffix (7.0.5)
     puma (8.1.2)
       nio4r (~> 2.0)
@@ -607,9 +608,8 @@ GEM
     zeitwerk (2.8.3)
 
 PLATFORMS
-  arm64-darwin-24
-  arm64-darwin-25
-  x86_64-darwin-22
+  arm64-darwin
+  x86_64-linux
 
 DEPENDENCIES
   abbrev
