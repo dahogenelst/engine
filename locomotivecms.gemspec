@@ -70,7 +70,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'adomain',                         '~> 0.2'
 
   s.add_dependency 'grape',                           '~> 2.1'
-  s.add_dependency 'grape-entity',                    '~> 0.10'
+  s.add_dependency 'grape-entity',                    '>= 0.10', '< 2.0'
 
   s.add_dependency 'carrierwave',                     '~> 3.1'
 end
