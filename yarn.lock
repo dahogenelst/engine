@@ -4565,10 +4565,10 @@ react-flip-toolkit@^7.2.4:
     flip-toolkit "7.2.4"
     prop-types "^15.8.1"
 
-react-image-crop@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/react-image-crop/-/react-image-crop-5.0.0.tgz#4bff29b8324834a546fa08a92bcec7b375b654b3"
-  integrity sha512-MBT18tcHeEpmrhbSS6hx00MmfNgrnlhZuwY96cGRPhUmNeabxM7UBCcoU+oJCZXB0iGZk38zy/YGoZ4ELVp/LQ==
+react-image-crop@^11.1.2:
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-11.1.2.tgz#fbf20e58c0b02746d6388d64759c012b0ffde5c2"
+  integrity sha512-+0Pc2fxpwKL4u4oLmdKBw8XSwUceFbXbKEHvFOlsl/MGB1OVNic4uBlAPmEHGXYgoJIq+b63xHbc/aJMG0AVkA==
 
 react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0:
   version "16.13.1"
