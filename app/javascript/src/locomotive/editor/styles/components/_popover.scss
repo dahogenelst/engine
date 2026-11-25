@@ -1,3 +1,20 @@
+.dropdown {
+  position: relative;
+}
+
+.dropdown-panel {
+  position: absolute;
+  z-index: 201;
+  will-change: transform; // its own layer, as the old popover had (same shadow rendering)
+}
+
+// the block type picker: centered below the button
+.editor-section-blocks--new .dropdown-panel {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .rap-popover-pad {
   box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.1), 0 2px 4px rgba(16, 22, 26, 0.2),
     0 8px 24px rgba(16, 22, 26, 0.2);

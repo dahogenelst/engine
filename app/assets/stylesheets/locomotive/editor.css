@@ -2416,12 +2416,6 @@
 .editor-section-blocks--list > div {
   height: 100%;
 }
-.editor-section-blocks .rap-manager {
-  margin-top: 1rem;
-}
-.editor-section-blocks .rap-manager, .editor-section-blocks .rap-target-container {
-  width: 100%;
-}
 
 .editor-section-blocks-standalone:before {
   display: none;
@@ -2479,6 +2473,22 @@
 }
 .modal-close:hover {
   color: #000;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-panel {
+  position: absolute;
+  z-index: 201;
+  will-change: transform;
+}
+
+.editor-section-blocks--new .dropdown-panel {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .rap-popover-pad {
@@ -2720,17 +2730,11 @@
   transition: opacity 100ms linear;
   text-decoration: none;
 }
-.locale-switcher-content {
-  margin-top: 0.6rem;
-  width: 10rem;
-  z-index: 999 !important;
-}
-.locale-switcher-content > span {
-  z-index: 1000;
-}
-.locale-switcher .rap-popper-div {
-  z-index: 999 !important;
-  transform: translate3d(0px, 25px, 0px) !important;
+.locale-switcher .dropdown-panel {
+  top: 0;
+  left: 0;
+  z-index: 999;
+  transform: translate3d(0px, 25px, 0px);
 }
 .locale-switcher-locales {
   position: relative;
