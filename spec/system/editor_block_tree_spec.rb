@@ -1,5 +1,6 @@
 # The blocks of a section displayed as a tree (blocks_display: 'tree'): dragging a block
 # sideways changes its depth, dragging it up or down moves it together with its children.
+# The rules themselves are unit tested in app/javascript/test/utils/block_tree.test.js.
 describe 'Sorting the blocks of a section displayed as a tree', js: true do
 
   before do
@@ -24,32 +25,20 @@ describe 'Sorting the blocks of a section displayed as a tree', js: true do
     expect(page).to have_no_css('.editor-startup') # its fade-out still covers the list
     find(:link, text: /\Amain menu\z/i).click
     expect(page).to have_css('.editor-list-item', count: links.size)
+    expect(page).to have_no_css('.editor-transition[class*="-enter-active"]') # the view still slides in: the handles move
   end
 
-  # react-dnd uses native HTML5 drag and drop, which WebDriver cannot drive with the mouse, so
-  # fire the drag events ourselves. The pointer goes dx sideways from where the drag started
-  # (sortly indents per 20px) and dy from the vertical center of `over`.
-  def html5_drag(label, over:, dx: 0, dy: 0)
+  # drags the handle of a block with the mouse: down to the vertical center of `over` (+dy),
+  # and dx sideways from where it started, which sets the depth (20px per level)
+  def drag_block(label, over:, dx: 0, dy: 0)
     handle = find('.editor-list-item', text: /\A#{label}\z/i).find('.editor-list-item--drag-handle')
-    target = find('.editor-list-item', text: /\A#{over}\z/i).find(:xpath, '../..') # the drop target wraps the indented wrapper of the item
-    page.evaluate_async_script(<<~JS, handle, target, dx, dy)
-      const [handle, target, dx, dy, done] = arguments;
-      const dataTransfer = new DataTransfer();
-      const center = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
-      const fire = (el, type, [x, y]) => el.dispatchEvent(new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer, clientX: x, clientY: y }));
-      const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-      (async () => {
-        const start = center(handle);
-        fire(handle, 'dragstart', start);
-        await wait(50);
-        const point = [start[0] + dx, center(target)[1] + dy];
-        fire(target, 'dragenter', point);
-        for (let i = 0; i < 10; i++) { fire(target, 'dragover', point); await wait(30); } // sortly re-checks every animation frame
-        fire(target, 'drop', point);
-        fire(handle, 'dragend', point);
-        done();
-      })();
-    JS
+    target = find('.editor-list-item', text: /\A#{over}\z/i)
+    center = ->(el) { r = el.native.rect; [r.x + r.width / 2, r.y + r.height / 2] }
+    down   = (center.(target)[1] - center.(handle)[1] + dy).round
+    page.driver.browser.action
+      .click_and_hold(handle.native).move_by(0, 3).move_by(0, -3)
+      .move_by(dx / 2, down / 2).move_by(dx - dx / 2, down - down / 2).pause(duration: 0.3)
+      .release.perform
   end
 
   def expect_list(expected) # [label, depth] as the editor shows them (indented by 20px per level)
@@ -79,7 +68,7 @@ describe 'Sorting the blocks of a section displayed as a tree', js: true do
   it 'indents a block under the previous one' do
     create_menu ['Home', 0], ['About', 0], ['Team', 0], ['Contact', 0]
 
-    html5_drag 'Team', over: 'Team', dx: 40
+    drag_block 'Team', over: 'Team', dx: 40
 
     expect_list [['HOME', 0], ['ABOUT', 0], ['TEAM', 1], ['CONTACT', 0]]
     expect_preview '<li>Home</li><li>About<ul><li>Team</li></ul></li><li>Contact</li>'
@@ -90,7 +79,7 @@ describe 'Sorting the blocks of a section displayed as a tree', js: true do
   it 'outdents a block' do
     create_menu ['Home', 0], ['About', 0], ['Team', 1], ['Contact', 0]
 
-    html5_drag 'Team', over: 'Team', dx: -40
+    drag_block 'Team', over: 'Team', dx: -40
 
     expect_list [['HOME', 0], ['ABOUT', 0], ['TEAM', 0], ['CONTACT', 0]]
     expect_preview '<li>Home</li><li>About</li><li>Team</li><li>Contact</li>'
@@ -100,7 +89,7 @@ describe 'Sorting the blocks of a section displayed as a tree', js: true do
   it 'moves a block together with its children' do
     create_menu ['Home', 0], ['About', 0], ['Team', 1], ['Contact', 0]
 
-    html5_drag 'About', over: 'Contact', dy: 10 # the lower half of Contact: after it
+    drag_block 'About', over: 'Contact', dy: 10 # the lower half of Contact: after it
 
     expect_list [['HOME', 0], ['CONTACT', 0], ['ABOUT', 0], ['TEAM', 1]]
     expect_preview '<li>Home</li><li>Contact</li><li>About<ul><li>Team</li></ul></li>'
@@ -110,7 +99,7 @@ describe 'Sorting the blocks of a section displayed as a tree', js: true do
   it 'never indents deeper than the block_max_depth of the section' do
     create_menu ['Home', 0], ['About', 1], ['Team', 2], ['Contact', 1]
 
-    html5_drag 'Contact', over: 'Contact', dx: 120 # Team above would allow depth 3, block_max_depth is 2
+    drag_block 'Contact', over: 'Contact', dx: 120 # Team above would allow depth 3, block_max_depth is 2
 
     expect_list [['HOME', 0], ['ABOUT', 1], ['TEAM', 2], ['CONTACT', 2]]
     expect(saved_blocks).to eq [['Home', 0], ['About', 1], ['Team', 2], ['Contact', 2]]

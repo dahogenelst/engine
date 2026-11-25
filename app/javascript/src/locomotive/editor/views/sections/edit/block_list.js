@@ -1,14 +1,17 @@
-import React from 'react';
-import { DndProvider } from 'react-dnd';
-import { Flipper, Flipped } from 'react-flip-toolkit';
-import HTML5Backend from 'react-dnd-html5-backend';
-import Sortly, { ContextProvider, useDrag, useDrop } from 'react-sortly';
+import React, { useState } from 'react';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 // Components
 import Block from './block';
 
 // Services
 import { findBetterImageAndText } from '../../../services/blocks_service';
+import { withoutDescendants, project, move } from '../../../utils/block_tree';
+import { draggingHandlers } from '../../../utils/dragging';
+
+const INDENTATION = 20; // px per level
 
 const buildItems = props => {
   return (props.sectionContent.blocks || []).map(block => {
@@ -33,49 +36,54 @@ const buildItems = props => {
   });
 }
 
-const ItemRenderer = (props) => {
-  const { data } = props;
-  const [, drop] = useDrop();
-  const [{ isDragging }, drag, preview] = useDrag({
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
+const SortableBlock = ({ item, depth }) => {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
+
+  // only vertical on screen: moving sideways changes the depth instead
+  const style = { transform: CSS.Transform.toString(transform && { ...transform, x: 0 }), transition };
 
   return (
-    <Flipped flipId={data.id}>
-      <div ref={ref => drop(preview(ref))}>
-        <div style={{ marginLeft: data.depth * 20 }}>
-          <Block isDragging={isDragging} drag={drag} {...data} />
-        </div>
+    <div ref={setNodeRef} style={{ ...style, ...(isDragging ? { position: 'relative', zIndex: 1 } : {}) }}>
+      <div style={{ marginLeft: depth * INDENTATION }}>
+        <Block isDragging={isDragging} handleProps={{ ref: setActivatorNodeRef, ...attributes, ...listeners }} {...item} />
       </div>
-    </Flipped>
+    </div>
   );
 };
 
-const SortableTree = props => {
-  const items = buildItems(props);
-  const onChange = sortedItems => {
-    props.moveBlock(
-      sortedItems.map(item => ({ ...item.block, depth: item.depth }))
-    );
+const BlockList = props => {
+  const items   = buildItems(props);
+  const sensors = useSensors(useSensor(PointerSensor));
+  const [drag, setDrag] = useState(null); // { activeId, overId, offsetX }
+
+  // while dragging, the descendants of the dragged block are hidden and it shows the depth it will get
+  const visible   = drag ? withoutDescendants(items, drag.activeId) : items;
+  const projected = drag && project(items, drag.activeId, drag.overId, drag.offsetX, INDENTATION, props.maxDepth).depth;
+
+  const onDragEnd = ({ active, over, delta }) => {
+    draggingHandlers.onDragEnd();
+    setDrag(null);
+    const sorted = move(items, active.id, over ? over.id : active.id, delta.x, INDENTATION, props.maxDepth);
+    if (sorted.some((item, index) => item.id !== items[index].id || item.depth !== items[index].depth))
+      props.moveBlock(sorted.map(item => ({ ...item.block, depth: item.depth })));
   };
 
   return (
-    <Flipper flipKey={items.map(({ id }) => id).join('.')} spring="stiff">
-      <Sortly items={items} onChange={onChange} maxDepth={props.maxDepth}>
-        {(props) => <ItemRenderer {...props} />}
-      </Sortly>
-    </Flipper>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={({ active }) => { draggingHandlers.onDragStart(); setDrag({ activeId: active.id, overId: active.id, offsetX: 0 }); }}
+      onDragMove={({ active, over, delta }) => setDrag({ activeId: active.id, overId: over ? over.id : active.id, offsetX: delta.x })}
+      onDragEnd={onDragEnd}
+      onDragCancel={() => { draggingHandlers.onDragCancel(); setDrag(null); }}
+    >
+      <SortableContext items={visible.map(item => item.id)} strategy={verticalListSortingStrategy}>
+        {visible.map(item => (
+          <SortableBlock key={item.id} item={item} depth={drag && item.id === drag.activeId ? projected : item.depth} />
+        ))}
+      </SortableContext>
+    </DndContext>
   );
 };
-
-const BlockList = props => (
- <DndProvider backend={HTML5Backend}>
-   <ContextProvider>
-     <SortableTree {...props} />
-   </ContextProvider>
- </DndProvider>
-);
 
 export default BlockList;

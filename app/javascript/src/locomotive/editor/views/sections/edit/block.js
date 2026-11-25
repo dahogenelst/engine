@@ -5,8 +5,7 @@ import { truncate } from 'lodash';
 import { SlideLeftLink } from '../../../components/links';
 import EditIcon from '../../../components/icons/edit';
 
-const Block = ({ image, text, handleComponent, editPath, isDragging, ...props }) => {
-  const Handle = handleComponent;
+const Block = ({ image, text, handleProps, editPath, isDragging, ...props }) => {
 
   return (
     <div className={`editor-list-item ${isDragging ? 'editor-list-item--dragging' : ''}`}>
@@ -20,7 +19,7 @@ const Block = ({ image, text, handleComponent, editPath, isDragging, ...props })
         </SlideLeftLink>
       </div>
       <div className="editor-list-item--actions">
-        <div ref={props.drag} className="editor-list-item--drag-handle">
+        <div className="editor-list-item--drag-handle" {...handleProps}>
           <i className="fa fa-bars"></i>
         </div>
       </div>
