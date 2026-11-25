@@ -6,12 +6,11 @@ import { SlideLeftLink } from '../../../../components/links';
 import Icons from '../../../../components/icons';
 import EditIcon from '../../../../components/icons/edit';
 
-const Section = ({ image, text, ...props }) => {
-  const Handle  = props.handleComponent;
+const Section = ({ image, text, nodeRef, style, handleProps, ...props }) => {
   const Icon    = Icons[props.definition.icon] || Icons.default;
 
   return (
-    <div className="editor-list-item editor-dropzone-section">
+    <div className="editor-list-item editor-dropzone-section" ref={nodeRef} style={style}>
       {image && (
         <div className="editor-list-item--image" style={{ backgroundImage: `url("${image}")` }}>
         </div>
@@ -27,7 +26,7 @@ const Section = ({ image, text, ...props }) => {
         </SlideLeftLink>
       </div>
       <div className="editor-list-item--actions">
-        <Handle />
+        <div className="editor-list-item--drag-handle" {...handleProps}><i className="fa fa-bars"></i></div>
       </div>
     </div>
   )
