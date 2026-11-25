@@ -7,9 +7,9 @@ Capybara.server_port = 9886
 Capybara.default_max_wait_time = 10
 
 Capybara.register_driver(:locomotive_headless_chrome) do |app|
-  options = Selenium::WebDriver::Chrome::Options.new(
-    args: %w[headless=new disable-gpu no-sandbox window-size=1600,768 disable-features=PasswordLeakDetection]
-  )
+  args = %w[disable-gpu no-sandbox window-size=1600,768 disable-features=PasswordLeakDetection]
+  args << 'headless=new' unless ENV['HEADFUL'] # HEADFUL=1 shows the browser, to watch a spec
+  options = Selenium::WebDriver::Chrome::Options.new(args: args)
   # Chrome's password manager / leak warning ("password" is a breached password) steals keyboard focus
   options.add_preference(:credentials_enable_service, false)
   options.add_preference(:profile, password_manager_enabled: false, password_manager_leak_detection: false)
@@ -49,3 +49,12 @@ module StaleNodeAsStaleElement
   end
 end
 Selenium::WebDriver::Remote::Bridge.prepend(StaleNodeAsStaleElement)
+
+# SLOWMO=0.3 waits that many seconds after every browser command, to follow a spec with HEADFUL=1
+if (slowmo = ENV['SLOWMO'].to_f) > 0
+  Selenium::WebDriver::Remote::Bridge.prepend(Module.new do
+    private
+
+    define_method(:execute) { |*args| super(*args).tap { sleep slowmo } }
+  end)
+end
