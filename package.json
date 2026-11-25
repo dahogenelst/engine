@@ -63,7 +63,7 @@
     "react-dom": "^18.3.1",
     "react-draft-wysiwyg": "^1.15.0",
     "react-flip-toolkit": "^7.2.4",
-    "react-image-crop": "^5.0.0",
+    "react-image-crop": "^11.1.2",
     "react-js-pagination": "^3.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^5.2.0",
