@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import update from '../../src/locomotive/editor/utils/immutable_update';
 
 describe('locomotive/editor/utils/immutable_update', function() {
@@ -17,8 +16,8 @@ describe('locomotive/editor/utils/immutable_update', function() {
         }
       });
 
-      expect(newState).to.eql({ items: ['a', 'c', 'b'] });
-      expect(state).to.eql({ items: ['a', 'b', 'c'] });
+      expect(newState).toEqual({ items: ['a', 'c', 'b'] });
+      expect(state).toEqual({ items: ['a', 'b', 'c'] });
     });
 
   });

@@ -1,42 +1,44 @@
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import { connect } from 'react-redux';
-import * as redux from 'redux';
-import Adapter from 'enzyme-adapter-react-16';
-import { expect } from 'chai';
-import { Route } from 'react-router';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Route } from 'react-router-dom';
 
-import { ActionBar } from '../../../javascript/src/locomotive/editor/views/action_bar'; //should put in tests utils
-import Startup from '../../../javascript/src/locomotive/editor/views/startup'; //should put in tests utils
+import { ActionBar } from '../../../javascript/src/locomotive/editor/views/action_bar';
 
-import { buildProps } from '../utils'
-Enzyme.configure({ adapter: new Adapter() });
+// the header and the real views need the redux store; the routing is what we test here
+jest.mock('../../../javascript/src/locomotive/editor/views/action_bar/header', () => () => null);
+jest.mock('../../../javascript/src/locomotive/editor/routes', () => [
+  { path: '/:pageId/content/edit', exact: true, component: () => 'Main view' }
+]);
 
-const prettyFormat = require('pretty-format')
+const renderActionBar = (iframeLoaded) => render(
+  <MemoryRouter initialEntries={['/1/content/edit']}>
+    <Route render={({ location, history }) => (
+      <ActionBar pageId={1} iframeLoaded={iframeLoaded} location={location} history={history} />
+    )} />
+  </MemoryRouter>
+);
 
 describe('components', () => {
   describe('ActionBar', () => {
     describe('render', () => {
       it('should render an action bar', () => {
-        const props = buildProps();
-        const subject = shallow(<ActionBar { ...props } />);
-        expect(subject.find('.actionbar').length).to.equal(1);
+        const { container } = renderActionBar(false);
+        expect(container.querySelectorAll('.actionbar').length).toBe(1);
       });
 
       describe('when preview is not loaded yet', () => {
         it('should render a waiting screen', () => {
-          const props = buildProps();
-          const subject = shallow(<ActionBar { ...props } />);
-          expect(subject).to.contains(Startup);
+          renderActionBar(false);
+          expect(screen.getByText('Waiting...')).toBeTruthy();
+          expect(screen.queryByText('Main view')).toBeNull();
         });
       });
 
       describe('when preview is loaded', () => {
-        it('should defined Routes on /', () => {
-          const props = buildProps({iframe: { loaded: true, window: null }});
-          const subject = shallow(<ActionBar { ...props } />);
-          expect(subject.find(Route)).to.exist;
-          expect(subject.find(Route).findWhere(n => n.props().path == '/')).to.exist;
+        it('should render the route of the current page', () => {
+          renderActionBar(true);
+          expect(screen.getByText('Main view')).toBeTruthy();
+          expect(screen.queryByText('Waiting...')).toBeNull();
         });
       });
     });
