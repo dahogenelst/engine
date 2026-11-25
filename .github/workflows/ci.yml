@@ -35,7 +35,7 @@ jobs:
       - run: echo "127.0.0.1 locomotive.local" | sudo tee -a /etc/hosts
       # the jest suite runs in the editor-bundle job
       - run: bundle exec rspec --exclude-pattern "spec/javascript/**/*_spec.rb"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: capybara-screenshots-${{ matrix.ruby }}
@@ -51,7 +51,7 @@ jobs:
         with:
           ref: ${{ github.head_ref || github.ref }}
           token: ${{ secrets.CASCADE_TOKEN || github.token }}  # a PAT, so the push below triggers CI
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: yarn
