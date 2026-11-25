@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { bindAll } from 'lodash';
 import i18n from '../../../../i18n';
 
@@ -10,33 +12,54 @@ import { findBetterImageAndText } from '../../../../services/sections_service';
 import { SlideLeftLink } from '../../../../components/links';
 import Section from './section';
 
-const DragHandle      = SortableHandle(() => (
-  <div className="editor-list-item--drag-handle"><i className="fa fa-bars"></i></div>
-));
-const SortableSection = SortableElement(Section);
-const SortableList    = SortableContainer(({ list, ...props }) => {
-  return (
-    <div>
-      {(list || []).map((section, index) => {
-        const definition        = props.findSectionDefinition(section.type);
-        const { image, text }   = findBetterImageAndText(section, definition)
+const lockVerticalAxis = ({ transform }) => ({ ...transform, x: 0 });
 
-        return (
-          <SortableSection
-            key={`section-${section.id}`}
-            index={index}
-            image={image}
-            text={text}
-            section={section}
-            definition={definition}
-            editPath={props.editSectionPath(section)}
-            handleComponent={DragHandle}
-          />
-        )}
-      )}
-    </div>
+const SortableSection = props => {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id: props.section.id });
+
+  return (
+    <Section
+      {...props}
+      nodeRef={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, ...(isDragging ? { position: 'relative', zIndex: 1 } : {}) }} // above its siblings while dragged
+      handleProps={{ ref: setActivatorNodeRef, ...attributes, ...listeners }}
+    />
   );
-});
+}
+
+const SortableList = ({ list, onSortEnd, ...props }) => {
+  const sensors = useSensors(useSensor(PointerSensor));
+  const ids     = (list || []).map(section => section.id);
+
+  const onDragEnd = ({ active, over }) => {
+    if (over && active.id !== over.id)
+      onSortEnd({ oldIndex: ids.indexOf(active.id), newIndex: ids.indexOf(over.id) });
+  };
+
+  return (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} modifiers={[lockVerticalAxis]} onDragEnd={onDragEnd}>
+      <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+        <div>
+          {(list || []).map(section => {
+            const definition        = props.findSectionDefinition(section.type);
+            const { image, text }   = findBetterImageAndText(section, definition)
+
+            return (
+              <SortableSection
+                key={`section-${section.id}`}
+                image={image}
+                text={text}
+                section={section}
+                definition={definition}
+                editPath={props.editSectionPath(section)}
+              />
+            )}
+          )}
+        </div>
+      </SortableContext>
+    </DndContext>
+  );
+}
 
 export class Dropzone extends Component {
 
@@ -59,10 +82,8 @@ export class Dropzone extends Component {
       <div className="editor-section-list">
         <SortableList
           list={this.props.list}
-          onSortEnd={this.onSortEnd}
-          useDragHandle={true}
-          lockAxis="y"
           {...this.props}
+          onSortEnd={this.onSortEnd}
         />
 
         <div className="editor-list-add">
