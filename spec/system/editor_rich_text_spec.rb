@@ -20,7 +20,7 @@ describe 'Editing a rich text setting of a section', js: true do
 
     editor = find('.public-DraftEditor-content')
     editor.click
-    editor.send_keys([:command, 'a'], [:control, 'a']) # select all (mac / linux)
+    editor.send_keys([RUBY_PLATFORM.include?('darwin') ? :command : :control, 'a']) # select all
     find('.rdw-option-wrapper[title="Bold"]').click
     editor.send_keys(:end, ' world')
     expect(page).to have_css('.public-DraftEditor-content', text: 'Hello world')
