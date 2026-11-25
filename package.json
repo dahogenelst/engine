@@ -21,13 +21,11 @@
     "@babel/preset-env": "^8.0.7",
     "@babel/preset-react": "^8.0.1",
     "@svgr/cli": "^8.1.0",
+    "@testing-library/react": "^12.1.5",
     "autoprefixer": "^10.7.0",
     "babel-jest": "^30.5.2",
     "babel-loader": "^10.1.1",
-    "chai": "^4.1.2",
     "css-loader": "^7.1.5",
-    "enzyme": "^3.8.0",
-    "enzyme-adapter-react-16": "^1.15.8",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
@@ -92,7 +90,6 @@
     "node": ">=24"
   },
   "resolutions": {
-    "draft-js/immutable": "~3.8.4",
-    "enzyme/cheerio": "1.0.0-rc.12"
+    "draft-js/immutable": "~3.8.4"
   }
 }

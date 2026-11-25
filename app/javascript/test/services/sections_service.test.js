@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { omit } from 'lodash';
 import {
   buildSection,
@@ -52,50 +51,50 @@ describe('locomotive/editor/services/sections_service', function() {
   describe('#findFromTextId', function() {
     it('returns the section/block/input matching the text id [PAGE]', () => {
       const { sectionId, blockType, blockId, settingId } = findFromTextId('section-page-hero_simple.title', content, sectionIds);
-      expect(sectionId).to.eq('a1');
-      expect(blockType).to.eq(null);
-      expect(blockId).to.eq(null);
-      expect(settingId).to.eq('title');
+      expect(sectionId).toBe('a1');
+      expect(blockType).toBe(null);
+      expect(blockId).toBe(null);
+      expect(settingId).toBe('title');
     });
 
     it('returns the brand new section/block/input matching the text id [PAGE]', () => {
       const { sectionId, blockType, blockId, settingId } = findFromTextId('section-dropzone-4906b3b6-c5f2-4b30-baeb-dd95e960bb17.title', content, sectionIds);
-      expect(sectionId).to.eq('4906b3b6-c5f2-4b30-baeb-dd95e960bb17');
-      expect(blockType).to.eq(null);
-      expect(blockId).to.eq(null);
-      expect(settingId).to.eq('title');
+      expect(sectionId).toBe('4906b3b6-c5f2-4b30-baeb-dd95e960bb17');
+      expect(blockType).toBe(null);
+      expect(blockId).toBe(null);
+      expect(settingId).toBe('title');
     });    
 
     it('returns the section/block/input matching the text id [SITE]', () => {
       const { sectionId, blockId, blockType, settingId } = findFromTextId('section-site-header-block.0.text', content, sectionIds);
-      expect(sectionId).to.eq('b2');
-      expect(blockType).to.eq('page');
-      expect(blockId).to.eq('0');
-      expect(settingId).to.eq('text');
+      expect(sectionId).toBe('b2');
+      expect(blockType).toBe('page');
+      expect(blockId).toBe('0');
+      expect(settingId).toBe('text');
     });
 
     it('returns the new section/block/input matching the text id [SITE]', () => {
       const { sectionId, blockId, blockType, settingId } = findFromTextId('section-site-header-block.6e8d235c-8d0e-4ef9-966a-ae20383f98ca.text', content, sectionIds);
-      expect(sectionId).to.eq('b2');
-      expect(blockType).to.eq('page');
-      expect(blockId).to.eq('6e8d235c-8d0e-4ef9-966a-ae20383f98ca');
-      expect(settingId).to.eq('text');
+      expect(sectionId).toBe('b2');
+      expect(blockType).toBe('page');
+      expect(blockId).toBe('6e8d235c-8d0e-4ef9-966a-ae20383f98ca');
+      expect(settingId).toBe('text');
     });
 
     it('returns the section/block/input matching the text id [DROPZONE]', () => {      
       const { sectionId, blockId, blockType, settingId } = findFromTextId('section-dropzone-0-block.1.name', content, sectionIds);
-      expect(sectionId).to.eq('42');
-      expect(blockType).to.eq('team');
-      expect(blockId).to.eq('1');
-      expect(settingId).to.eq('name');
+      expect(sectionId).toBe('42');
+      expect(blockType).toBe('team');
+      expect(blockId).toBe('1');
+      expect(settingId).toBe('name');
     });
 
     it('returns the brand new section/block/input matching the text id [DROPZONE]', () => {
       const { sectionId, blockId, blockType, settingId } = findFromTextId('section-dropzone-4906b3b6-c5f2-4b30-baeb-dd95e960bb17-block.6e8d235c-8d0e-4ef9-966a-ae20383f98ca.name', content, sectionIds);
-      expect(sectionId).to.eq('4906b3b6-c5f2-4b30-baeb-dd95e960bb17');
-      expect(blockType).to.eq('person');
-      expect(blockId).to.eq('6e8d235c-8d0e-4ef9-966a-ae20383f98ca');
-      expect(settingId).to.eq('name');
+      expect(sectionId).toBe('4906b3b6-c5f2-4b30-baeb-dd95e960bb17');
+      expect(blockType).toBe('person');
+      expect(blockId).toBe('6e8d235c-8d0e-4ef9-966a-ae20383f98ca');
+      expect(settingId).toBe('name');
     });
     
   });
@@ -109,7 +108,7 @@ describe('locomotive/editor/services/sections_service', function() {
         keep_name: true,
         settings: [{ id: 'image', type: 'image_picker' }, { id: 'body', type: 'text' }]
       };
-      expect(findBetterImageAndText(content, definition)).to.include({ image: null, text: null });
+      expect(findBetterImageAndText(content, definition)).toMatchObject({ image: null, text: null });
     });
 
     it('returns the first image and text of the section', function() {
@@ -117,7 +116,7 @@ describe('locomotive/editor/services/sections_service', function() {
       const definition = {
         settings: [{ id: 'image', type: 'image_picker' }, { id: 'body', type: 'text' }, { id: 'logo', type: 'image_picker' }]
       };
-      expect(findBetterImageAndText(content, definition)).to.include({ image: '/banner.png', text: 'Hello world' });
+      expect(findBetterImageAndText(content, definition)).toMatchObject({ image: '/banner.png', text: 'Hello world' });
     });
 
     it('returns the first image and text of all the blocks if the section has no settings', function() {
@@ -131,7 +130,7 @@ describe('locomotive/editor/services/sections_service', function() {
           }
         ]
       };
-      expect(findBetterImageAndText(content, definition)).to.include({ image: '/banner.png', text: 'Hello world' });
+      expect(findBetterImageAndText(content, definition)).toMatchObject({ image: '/banner.png', text: 'Hello world' });
     });
   });
 
@@ -157,10 +156,10 @@ describe('locomotive/editor/services/sections_service', function() {
       ]
       const section = buildSection(definitions, 'slideshow', 1)
 
-      expect(section.id).to.have.lengthOf(45);
-      expect(section.uuid).to.have.lengthOf(36);
+      expect(section.id).toHaveLength(45);
+      expect(section.uuid).toHaveLength(36);
 
-      expect(omit(section, ['id', 'uuid', 'anchor'])).to.eql({
+      expect(omit(section, ['id', 'uuid', 'anchor'])).toEqual({
         name:     'Creative',
         type:     'slideshow',
         settings: { title: 'Awesome!' },
@@ -170,12 +169,12 @@ describe('locomotive/editor/services/sections_service', function() {
 
       // it shouldn't keep a reference to the original preset settings
       section.settings.title = 'Modified title';
-      expect(definitions[0].presets[1].settings.title).to.eql('Awesome!');
+      expect(definitions[0].presets[1].settings.title).toEqual('Awesome!');
     });
 
     it('should build a valid section even if the preset is incomplete', function() {
       const definitions = [{ type: 'slideshow', presets: [{ name: 'Simple' }] }];
-      expect(omit(buildSection(definitions, 'slideshow', 0), ['id', 'uuid', 'anchor'])).to.eql({
+      expect(omit(buildSection(definitions, 'slideshow', 0), ['id', 'uuid', 'anchor'])).toEqual({
         name:     'Simple',
         type:     'slideshow',
         settings: {},
@@ -210,15 +209,15 @@ describe('locomotive/editor/services/sections_service', function() {
           presets: [{ name: 'Simple', settings: { image: '/banner.png' }, blocks: [{ type: 'button' }, { type: 'button' }] }]
         }
       ];
-      expect(omit(buildSection(definitions, 'hero', 0), ['id', 'uuid', 'anchor', 'blocks'])).to.eql({
+      expect(omit(buildSection(definitions, 'hero', 0), ['id', 'uuid', 'anchor', 'blocks'])).toEqual({
         name: 'Simple',
         type: 'hero',
         settings: { title: 'Hello world', image: '/banner.png' },
         source: 'dropzone'
       });
-      expect(buildSection(definitions, 'hero', 0).blocks.length).to.eq(2);
+      expect(buildSection(definitions, 'hero', 0).blocks.length).toBe(2);
 
-      expect(omit(buildSection(definitions, 'hero', 0).blocks[0], ['id'])).to.eql({
+      expect(omit(buildSection(definitions, 'hero', 0).blocks[0], ['id'])).toEqual({
         'type': 'button', settings: { label: 'CTA' }
       });
     });
@@ -229,7 +228,7 @@ describe('locomotive/editor/services/sections_service', function() {
 
     it('should return an empty array if no presets among the sections', function() {
       const definitions = [{ name: 'Header', settings: [] }];
-      expect(buildCategories(definitions)).to.eql([]);
+      expect(buildCategories(definitions)).toEqual([]);
     });
 
     it('should return a category with 2 presets from one single section with 2 presets', function() {
@@ -243,7 +242,7 @@ describe('locomotive/editor/services/sections_service', function() {
           ]
         }
       ];
-      expect(buildCategories(definitions)).to.eql([
+      expect(buildCategories(definitions)).toEqual([
         {
           id: 0,
           name: 'Category A',
@@ -270,7 +269,7 @@ describe('locomotive/editor/services/sections_service', function() {
           presets:  [{ name: 'Double column', category: 'Category A' }]
         }
       ];
-      expect(buildCategories(definitions)).to.eql([
+      expect(buildCategories(definitions)).toEqual([
         {
           id: 1,
           name: 'Category A',
@@ -299,7 +298,7 @@ describe('locomotive/editor/services/sections_service', function() {
         keep_name:  true,
         settings:   []
       };
-      expect(isEditable(definition)).to.equal(false);
+      expect(isEditable(definition)).toBe(false);
     });
 
     it('returns true if the definition does not define blocks or settings', function() {
@@ -320,7 +319,7 @@ describe('locomotive/editor/services/sections_service', function() {
           }
         ]
       };
-      expect(isEditable(definition)).to.equal(true);
+      expect(isEditable(definition)).toBe(true);
     });
 
   });

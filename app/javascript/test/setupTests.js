@@ -1,6 +1,3 @@
-import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
 global.Locomotive = {
   data: {
     locale: 'en'
@@ -13,6 +10,4 @@ global.Locomotive = {
     }
   }
 };
-
-configure({ adapter: new Adapter() });
 
