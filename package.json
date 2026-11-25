@@ -55,7 +55,7 @@
     "memoize-one": "^5.1.1",
     "prop-types": "^15.8.1",
     "rc-slider": "^11.1.9",
-    "rc-switch": "^1.8.0",
+    "rc-switch": "^4.1.0",
     "react": "^18.3.1",
     "react-autosuggest": "^10.1.0",
     "react-awesome-popover": "^4.1.0",
