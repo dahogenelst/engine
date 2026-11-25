@@ -2076,49 +2076,53 @@
   flex-grow: 1;
 }
 
-.editor-view.slide-up-enter,
-.editor-view.slide-down-enter,
-.editor-view.slide-right-enter,
-.editor-view.slide-left-enter {
+.editor-transition {
+  height: 100%;
+}
+
+.editor-transition.slide-up-enter,
+.editor-transition.slide-down-enter,
+.editor-transition.slide-right-enter,
+.editor-transition.slide-left-enter {
   opacity: 0;
 }
 
-.editor-view.slide-up-enter {
+.editor-transition.slide-up-enter {
   transform: translate(0, 20px);
 }
 
-.editor-view.slide-down-enter {
+.editor-transition.slide-down-enter {
   transform: translate(0, -20px);
 }
 
-.editor-view.slide-right-enter {
+.editor-transition.slide-right-enter {
   transform: translate(-20px, 0);
 }
 
-.editor-view.slide-left-enter {
+.editor-transition.slide-left-enter {
   transform: translate(20px, 0);
 }
 
-.editor-view.slide-up-enter.slide-up-enter-active,
-.editor-view.slide-down-enter.slide-down-enter-active,
-.editor-view.slide-right-enter.slide-right-enter-active,
-.editor-view.slide-left-enter.slide-left-enter-active {
+.editor-transition.slide-up-enter.slide-up-enter-active,
+.editor-transition.slide-down-enter.slide-down-enter-active,
+.editor-transition.slide-right-enter.slide-right-enter-active,
+.editor-transition.slide-left-enter.slide-left-enter-active {
   opacity: 1;
   transform: translate(0, 0);
   transition: opacity 150ms ease-in, transform 150ms ease-in-out;
 }
 
-.editor-view.slide-up-exit,
-.editor-view.slide-down-exit,
-.editor-view.slide-right-exit,
-.editor-view.slide-left-exit {
+.editor-transition.slide-up-exit,
+.editor-transition.slide-down-exit,
+.editor-transition.slide-right-exit,
+.editor-transition.slide-left-exit {
   opacity: 1;
 }
 
-.editor-view.slide-up-exit.slide-up-exit-active,
-.editor-view.slide-down-exit.slide-up-exit-active,
-.editor-view.slide-right-exit.slide-right-exit-active,
-.editor-view.slide-left-exit.slide-left-exit-active {
+.editor-transition.slide-up-exit.slide-up-exit-active,
+.editor-transition.slide-down-exit.slide-up-exit-active,
+.editor-transition.slide-right-exit.slide-right-exit-active,
+.editor-transition.slide-left-exit.slide-left-exit-active {
   opacity: 0;
   transition: opacity 100ms ease-in;
 }
