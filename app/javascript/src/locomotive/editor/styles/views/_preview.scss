@@ -114,3 +114,8 @@
     z-index: 999;
   }
 }
+
+// see utils/dragging.js
+.editor-dragging iframe {
+  pointer-events: none;
+}

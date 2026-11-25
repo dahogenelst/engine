@@ -14,10 +14,10 @@ describe 'Sorting the sections of a dropzone', js: true do
   end
 
   # a press, a few small moves, then the drop: sortable libraries only start dragging after the pointer moved
-  def drag(source, target)
+  def drag(source, target, release_dx: 0)
     page.driver.browser.action
       .click_and_hold(source.native).move_by(0, -2).move_by(0, -8)
-      .move_to(target.native).move_by(0, -5).pause(duration: 0.3)
+      .move_to(target.native).move_by(0, -5).move_by(release_dx, 0).pause(duration: 0.3)
       .release.perform
   end
 
@@ -47,6 +47,16 @@ describe 'Sorting the sections of a dropzone', js: true do
     titles = Locomotive::Page.find(@cards._id).sections_dropzone_content.map { |s| s.dig('settings', 'title') }
     expect(titles).to eq ['Card C', 'Card A', 'Card B']
     expect(page).to have_no_javascript_error
+  end
+
+  it 'ends the drag when the section is released over the preview' do
+    visit "/locomotive/#{@site.handle}/pages/#{@cards._id}/content/edit"
+    expect(page).to have_no_css('.editor-startup')
+
+    handles = all('.editor-dropzone-section .editor-list-item--drag-handle', count: 3)
+    drag(handles[2], handles[0], release_dx: 300) # the preview iframe starts right of the action bar
+    expect_texts('.editor-dropzone-section .editor-list-item--label', ['CARD C', 'CARD A', 'CARD B'])
+    expect(page).to have_button('Save') # enabled again: no drag in progress
   end
 
 end
