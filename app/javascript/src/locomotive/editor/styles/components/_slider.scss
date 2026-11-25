@@ -11,4 +11,5 @@
 .rc-slider-handle {
   border: none;
   background-color: $brand-primary;
+  opacity: 1; // rc-slider >= 9 makes the handle translucent
 }
