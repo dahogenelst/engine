@@ -1,5 +1,5 @@
 import React from 'react';
-import Slider, { Range } from 'rc-slider';
+import Slider from 'rc-slider';
 
 import { isBlank, presence } from '../utils/misc';
 
