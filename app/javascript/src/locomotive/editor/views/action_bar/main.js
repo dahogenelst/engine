@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { TransitionGroup } from 'react-transition-group';
+import SlideTransition from '../../components/slide_transition';
 import { bindAll } from 'lodash';
 
 // Components
@@ -40,7 +41,7 @@ class Main extends Component {
         )}
       >
         <TransitionGroup className="editor-tabpanes-wrapper">
-          <CSSTransition
+          <SlideTransition
             key={this.state.selectedTab}
             classNames="slide-down"
             timeout={{ enter: 300, exit: 200 }}
@@ -48,7 +49,7 @@ class Main extends Component {
             unmountOnExit={true}
           >
             <TabPane />
-          </CSSTransition>
+          </SlideTransition>
         </TransitionGroup>
       </View>
     )

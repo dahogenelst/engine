@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { TransitionGroup } from 'react-transition-group';
+import SlideTransition from '../../components/slide_transition';
 import { compact } from 'lodash';
 import routes from '../../routes';
 
@@ -36,7 +37,7 @@ class ActionBar extends Component {
         <Header />
 
         <TransitionGroup className="editor-route-wrapper">
-          <CSSTransition
+          <SlideTransition
             key={currentKey}
             classNames={`slide-${slideDirection}`}
             timeout={timeout}
@@ -58,7 +59,7 @@ class ActionBar extends Component {
               <Route render={() => <Redirect to={`/${pageId}/content/edit`} />} />
 
             </Switch>
-          </CSSTransition>
+          </SlideTransition>
         </TransitionGroup>
       </div>
     )
