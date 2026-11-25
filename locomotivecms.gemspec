@@ -69,7 +69,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'actionmailer-with-request',       '~> 0.5'
   s.add_dependency 'adomain',                         '~> 0.2'
 
-  s.add_dependency 'grape',                           '~> 2.1'
+  s.add_dependency 'grape',                           '~> 4.1'
   s.add_dependency 'grape-entity',                    '~> 1.1'
 
   s.add_dependency 'carrierwave',                     '~> 3.1'
