@@ -561,8 +561,8 @@ GEM
       logger (~> 1.4)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
-    shoulda-matchers (5.3.0)
-      activesupport (>= 5.2.0)
+    shoulda-matchers (8.0.1)
+      activesupport (>= 7.2)
     simple_form (5.4.1)
       actionpack (>= 7.0)
       activemodel (>= 7.0)
@@ -625,7 +625,7 @@ DEPENDENCIES
   rails-controller-testing
   rspec-rails
   selenium-webdriver
-  shoulda-matchers (~> 5.3)
+  shoulda-matchers (~> 8.0)
   simple_token_authentication!
   simplecov
   web-console (~> 4.2)
