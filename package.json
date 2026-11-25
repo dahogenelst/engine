@@ -60,7 +60,7 @@
     "react-autosuggest": "^10.1.0",
     "react-awesome-popover": "^4.1.0",
     "react-dnd": "^10.0.2",
-    "react-dnd-html5-backend": "^10.0.2",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
     "react-draft-wysiwyg": "^1.15.0",
     "react-flip-toolkit": "^7.2.4",
