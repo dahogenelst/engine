@@ -107,13 +107,13 @@ describe 'Sorting the blocks of a section displayed as a tree', js: true do
     expect(saved_blocks).to eq [['Home', 0], ['Contact', 0], ['About', 0], ['Team', 1]]
   end
 
-  it 'never indents deeper than one level below the previous block' do
-    create_menu ['Home', 0], ['About', 0], ['Team', 0]
+  it 'never indents deeper than the block_max_depth of the section' do
+    create_menu ['Home', 0], ['About', 1], ['Team', 2], ['Contact', 1]
 
-    html5_drag 'Team', over: 'Team', dx: 120 # far enough for several levels
+    html5_drag 'Contact', over: 'Contact', dx: 120 # Team above would allow depth 3, block_max_depth is 2
 
-    expect_list [['HOME', 0], ['ABOUT', 0], ['TEAM', 1]]
-    expect(saved_blocks).to eq [['Home', 0], ['About', 0], ['Team', 1]]
+    expect_list [['HOME', 0], ['ABOUT', 1], ['TEAM', 2], ['CONTACT', 2]]
+    expect(saved_blocks).to eq [['Home', 0], ['About', 1], ['Team', 2], ['Contact', 2]]
   end
 
 end
