@@ -58,7 +58,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'highline',                        '~> 2.1'
   s.add_dependency 'bazaar',                          '~> 0.0'
-  s.add_dependency 'json-schema',                     '~> 3.0'
+  s.add_dependency 'json-schema',                     '~> 6.2'
 
   s.add_dependency 'carrierwave-mongoid',             '~> 1.6'
   s.add_dependency 'dragonfly',                       '~> 1.4'
