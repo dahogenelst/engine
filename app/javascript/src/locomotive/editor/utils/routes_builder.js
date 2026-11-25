@@ -5,7 +5,8 @@ const _build = (tree, prefix, routes) => {
   return transform(tree, (result, value, key) => {
     const path = `${prefix}${key}`;
 
-    if (typeof(value) === 'object') {
+    // a nested tree of routes; memo/forwardRef components (react-redux connect) are objects too
+    if (typeof(value) === 'object' && !value.$$typeof) {
       if (value.component)
         result.push({ path, component: value.component, exact: true });
 
