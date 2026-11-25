@@ -2389,6 +2389,10 @@
   z-index: 999;
 }
 
+.editor-dragging iframe {
+  pointer-events: none;
+}
+
 .editor-page-settings {
   padding: 2rem 2rem 2rem;
 }

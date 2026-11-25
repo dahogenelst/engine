@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { draggingHandlers } from '../../../../utils/dragging';
 import { bindAll } from 'lodash';
 import i18n from '../../../../i18n';
 
@@ -32,12 +33,13 @@ const SortableList = ({ list, onSortEnd, ...props }) => {
   const ids     = (list || []).map(section => section.id);
 
   const onDragEnd = ({ active, over }) => {
+    draggingHandlers.onDragEnd();
     if (over && active.id !== over.id)
       onSortEnd({ oldIndex: ids.indexOf(active.id), newIndex: ids.indexOf(over.id) });
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} modifiers={[lockVerticalAxis]} onDragEnd={onDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} modifiers={[lockVerticalAxis]} onDragStart={draggingHandlers.onDragStart} onDragCancel={draggingHandlers.onDragCancel} onDragEnd={onDragEnd}>
       <SortableContext items={ids} strategy={verticalListSortingStrategy}>
         <div>
           {(list || []).map(section => {
