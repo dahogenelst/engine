@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rails',                           '>= 8.0', '< 9'
   s.add_dependency 'rails-html-sanitizer',            '~> 1.6'
 
-  s.add_dependency 'devise',                          '~> 4.9'
+  s.add_dependency 'devise',                          '~> 5.0'
   s.add_dependency 'devise-encryptable',              '~> 0.2'
   s.add_dependency 'simple_token_authentication',     '~> 1.18'
 
