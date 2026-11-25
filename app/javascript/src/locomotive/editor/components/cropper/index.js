@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactCrop from 'react-image-crop';
+import ReactCrop, { makeAspectCrop } from 'react-image-crop';
 import { bindAll } from 'lodash';
 import i18n from '../../i18n';
 
@@ -18,29 +18,35 @@ class Cropper extends Component {
     bindAll(this, 'apply', 'handleChange', 'handleImageLoaded', 'handleCroppedImageLoaded');
   }
 
-  handleChange(crop) {
+  // the crop is kept in % of the image (the 2nd argument); zoom compares it with the minimum width
+  handleChange(_pixelCrop, crop) {
     this.setState({ crop, zoom: crop.width / this.state.minWidth });
   }
 
-  handleImageLoaded(_image, pixelCrop) {
+  handleImageLoaded(event) {
     const { image, cropSize } = this.props;
-    const defaultCrop = this.getDefaultCrop(image, cropSize);
+    const { aspect, ...defaultCrop } = this.getDefaultCrop(image, cropSize, event.currentTarget);
     var crop = defaultCrop;
 
-    // Previous crop settings, if so, use them
-    if (image.crop && image.crop.aspect === defaultCrop.aspect)
-      crop = image.crop;
+    // Previous crop settings (stored in %, with their aspect), if so, use them
+    if (image.crop && image.crop.aspect === aspect) {
+      const { aspect: _aspect, ...previousCrop } = image.crop;
+      crop = { unit: '%', ...previousCrop };
+    }
 
-    // console.log('handleImageLoaded', image.width, image.height, '-', crop);
-
-    this.setState({ crop, minWidth: defaultCrop.width });
+    this.setState({
+      crop,
+      aspect,
+      minWidth:   defaultCrop.width, // %
+      minWidthPx: defaultCrop.width * event.currentTarget.width / 100 // ReactCrop wants pixels of the displayed image
+    });
   }
 
   handleCroppedImageLoaded() {
-    const { crop, croppedImageUrl } = this.state;
+    const { crop, aspect, croppedImageUrl } = this.state;
     const { handleChange, image } = this.props;
     this.setState({ croppedImageUrl: null, applyCrop: false }, () => {
-      handleChange({ ...image, cropped: croppedImageUrl, crop });
+      handleChange({ ...image, cropped: croppedImageUrl, crop: { ...crop, aspect } });
     });
   }
 
@@ -73,19 +79,20 @@ class Cropper extends Component {
     });
   }
 
-  getDefaultCrop(image, cropSize) {
+  getDefaultCrop(image, cropSize, imageElement) {
     const aspect  = cropSize.width / cropSize.height;
     const width   = cropSize.width / image.width * 100;
+    const fill    = (crop, aspect) => ({ ...makeAspectCrop(crop, aspect, imageElement.width, imageElement.height), aspect });
 
     // The main assumption is that either the width or the height is greater
     // than the related crop dimension.
     if (cropSize.width > image.width)
-      return { x: 0, y: 0, width: 100, aspect: image.width / cropSize.height };
+      return fill({ unit: '%', x: 0, y: 0, width: 100 }, image.width / cropSize.height);
 
     if (cropSize.height > image.height)
-      return { x: 0, y: 0, height: 100, aspect: cropSize.width / image.height };
+      return fill({ unit: '%', x: 0, y: 0, height: 100 }, cropSize.width / image.height);
 
-    return { x: 0, y: 0, width: width, height: width / aspect, aspect };
+    return { unit: '%', x: 0, y: 0, width: width, height: width / aspect, aspect };
   }
 
   render() {
@@ -95,13 +102,14 @@ class Cropper extends Component {
       <div className="editor-image-cropper">
         <div className="editor-image-cropper-tool">
           <ReactCrop
-            src={this.props.image.source}
             crop={this.state.crop}
-            minWidth={this.state.minWidth}
+            aspect={this.state.aspect}
+            minWidth={this.state.minWidthPx}
             disabled={this.state.applyCrop}
             onChange={this.handleChange}
-            onImageLoaded={this.handleImageLoaded}
-          />
+          >
+            <img src={this.props.image.source} onLoad={this.handleImageLoaded} />
+          </ReactCrop>
         </div>
         <div className="editor-image-cropper-action">
           <button className="btn btn-primary btn-sm" onClick={this.apply} disabled={this.state.applyCrop}>

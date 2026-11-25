@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
-import ReactCrop from 'react-image-crop';
 import { bindAll } from 'lodash';
 import i18n from '../i18n';
 
