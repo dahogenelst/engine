@@ -16,18 +16,11 @@
     }
   }
 
-  &-content {
-    margin-top: 0.6rem;
-    width: 10rem;
-    z-index: 999 !important;
-
-    > span {
-      z-index: 1000;
-    }
-  }
-  .rap-popper-div {
-    z-index: 999 !important;
-    transform: translate3d(0px, 25px, 0px) !important;
+  .dropdown-panel {
+    top: 0;
+    left: 0;
+    z-index: 999;
+    transform: translate3d(0px, 25px, 0px);
   }
 
   &-locales {

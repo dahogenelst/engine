@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Popover from 'react-awesome-popover';
+import Dropdown from '../../../components/dropdown';
 import i18n from '../../../i18n';
 
 export class NewBlockPicker extends React.Component {
@@ -7,7 +7,6 @@ export class NewBlockPicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = { open: false };
-    this.handleClickOutside = this.handleClickOutside.bind(this);
   }
 
   toggle(event) {
@@ -20,25 +19,11 @@ export class NewBlockPicker extends React.Component {
     this.setState({ open: false });
   }
 
-  componentDidMount() {
-    document.addEventListener('mousedown', this.handleClickOutside);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
-  }
-
-  handleClickOutside(event) {
-    if (this.pickerRef && !this.pickerRef.contains(event.target)) {
-      this.setState({ open: false });
-    }
-  }
-
   render() {
     const { sectionDefinition } = this.props;
 
     return (
-      <div className="editor-section-blocks--new" ref={el => this.pickerRef = el}>
+      <div className="editor-section-blocks--new">
         {sectionDefinition.blocks.length === 1 && (
           <div className="editor-list-add">
             <a className="editor-list-add--button" onClick={this.select.bind(this, null)}>
@@ -48,10 +33,15 @@ export class NewBlockPicker extends React.Component {
         )}
 
         {sectionDefinition.blocks.length > 1 && (
-          <Popover action={null} placement="bottom" arrow={false} open={this.state.open}>
-            <button className="editor-list-add--button" onClick={this.toggle.bind(this)}>
-              {i18n.t('views.sections.edit.add_block')}
-            </button>
+          <Dropdown
+            open={this.state.open}
+            onClose={() => this.setState({ open: false })}
+            target={
+              <button className="editor-list-add--button" onClick={this.toggle.bind(this)}>
+                {i18n.t('views.sections.edit.add_block')}
+              </button>
+            }
+          >
             <div className="rap-popover-pad">
               {sectionDefinition.blocks.map(blockDefinition =>
                 <div
@@ -63,7 +53,7 @@ export class NewBlockPicker extends React.Component {
                 </div>
               )}
             </div>
-          </Popover>
+          </Dropdown>
         )}
       </div>
     )
