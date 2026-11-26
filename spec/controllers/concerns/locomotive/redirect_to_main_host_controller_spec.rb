@@ -5,12 +5,13 @@ describe Locomotive::Concerns::RedirectToMainHostController do
       include Locomotive::Concerns::RedirectToMainHostController
       def root_url(options); end
     end
+    @host = Locomotive.config.host
     Locomotive.config.host = 'station.locomotive.dev'
   end
 
   after(:all) do
     Object.send :remove_const, :MyController
-    Locomotive.config.host = nil
+    Locomotive.config.host = @host # the other specs run on locomotive.local
   end
 
   let(:my_controller)   { MyController.new }
