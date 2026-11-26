@@ -1,8 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 import { ActionBar } from '../../../javascript/src/locomotive/editor/views/action_bar';
+import withRouter from '../../../javascript/src/locomotive/editor/hoc/with_router';
 
 // the header and the real views need the redux store; the routing is what we test here
 jest.mock('../../../javascript/src/locomotive/editor/views/action_bar/header', () => () => null);
@@ -10,11 +11,11 @@ jest.mock('../../../javascript/src/locomotive/editor/routes', () => [
   { path: '/:pageId/content/edit', exact: true, component: () => 'Main view' }
 ]);
 
+const RoutedActionBar = withRouter(ActionBar);
+
 const renderActionBar = (iframeLoaded) => render(
   <MemoryRouter initialEntries={['/1/content/edit']}>
-    <Route render={({ location, history }) => (
-      <ActionBar pageId={1} iframeLoaded={iframeLoaded} location={location} history={history} />
-    )} />
+    <RoutedActionBar pageId={1} iframeLoaded={iframeLoaded} />
   </MemoryRouter>
 );
 

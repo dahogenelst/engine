@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import i18n from '../i18n';
 
 // HOC
-import { withRouter } from 'react-router-dom';
+import withRouter from '../hoc/with_router';
 import withRoutes from '../hoc/with_routes';
 import withRedux from '../hoc/with_redux';
 

@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import i18n from '../../i18n';
 
 // HOC
-import { withRouter } from 'react-router-dom';
+import withRouter from '../../hoc/with_router';
 import withRedux from '../../hoc/with_redux';
 import withRoutes from '../../hoc/with_routes';
 
