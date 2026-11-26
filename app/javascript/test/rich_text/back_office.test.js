@@ -1,4 +1,5 @@
-import { roundtrip, keepsHtml } from '../../../javascript/src/locomotive/editor/rich_text/back_office';
+import { Editor } from '@tiptap/core';
+import { roundtrip, keepsHtml, extensions, toEditorHtml, toStoredHtml } from '../../../javascript/src/locomotive/editor/rich_text/back_office';
 
 // HTML as the back-office editor (wysihtml5) stored it: opened in the new editor and saved again,
 // it must come back byte for byte (the same fixture as spec/system/back_office_rich_text_spec.rb).
@@ -24,7 +25,11 @@ describe('back-office rich text HTML', () => {
     ['quotes with a cite',           '<blockquote cite="https://example.com">q</blockquote>'],
     ['lists with classes',           '<ul class="checks"><li id="a" class="done">one</li><li>two</li></ul>'],
     ['line breaks and empty paragraphs', '<p></p><ul><li>a</li></ul><p>a<br>b</p><p></p>'],
-    ['entities',                     '<p>café &lt;tag&gt; a&nbsp;b "quote" &amp;</p>']
+    ['entities',                     '<p>café &lt;tag&gt; a&nbsp;b "quote" &amp;</p>'],
+    ['text outside a paragraph',     'Loose text<br>second line<h2>Title</h2>more <b>text</b>'],
+    ['loose text in a div',          '<div class="lead">loose<p>para</p></div>'],
+    ['an empty div (filled by a script)', '<div class="pipedriveWebForms" data-pd-webforms="https://example.com/form"></div><p>after</p>'],
+    ['spans in spans (Word)',        '<p><span class="TextRun" data-x="1"><span class="NormalTextRun">word</span></span></p>']
   ])('keeps %s', (_name, html) => {
     expect(roundtrip(html)).toBe(html);
     expect(keepsHtml(html)).toBe(true);
@@ -36,8 +41,6 @@ describe('back-office rich text HTML', () => {
 
   // These would change: the editor opens them as HTML source (and tells why).
   it.each([
-    ['text outside a paragraph',     'Loose text<br>second line'],
-    ['loose text in a div',          '<div class="lead">loose<p>para</p></div>'],
     ['a block inside a link',        '<a href="/x"><p>block</p></a>'],
     ['an empty icon',                '<p><i class="fa fa-star"></i> star</p>'],
     ['a video',                      '<video></video>'],
@@ -50,6 +53,28 @@ describe('back-office rich text HTML', () => {
 
   it('does not mind the order of the attributes or the spaces between blocks', () => {
     expect(keepsHtml('<p><a href="/x" target="_blank">x</a></p>\n<p><img src="/a.png" alt="a"></p>\n')).toBe(true);
+  });
+
+  it('does not mind spaces a browser does not show either', () => {
+    expect(keepsHtml('<p>two  spaces and a\nnew line </p><p>\n\t</p>')).toBe(true);
+    expect(keepsHtml('<pre>two  spaces</pre>')).toBe(true);
+    expect(keepsHtml('<p>a&nbsp;&nbsp;b</p>')).toBe(true);
+    expect(keepsHtml('<p><strong>question? </strong></p><p>a <b>b <br></b>c</p>')).toBe(true); // at the edges
+  });
+
+  it('does not mind formatting that shows the same', () => {
+    expect(keepsHtml('<p><i></i>a<em></em> <i><i>b</i></i> <strong>c</strong><strong>d</strong></p>')).toBe(true);
+    expect(keepsHtml('<p><span class="a">x</span><span class="a">y</span> <span class="b"><a href="/x">z</a></span></p>')).toBe(true);
+    expect(keepsHtml('<p><i class="fa fa-star"></i> star</p>')).toBe(false); // an icon shows
+  });
+
+  it('keeps the lines of text outside a paragraph split with Enter', () => {
+    const editor = new Editor({ extensions, content: toEditorHtml('ab<h2>t</h2>') });
+    editor.chain().setTextSelection(2).splitBlock().run(); // in the middle: both parts stay outside
+    expect(toStoredHtml(editor.getHTML())).toBe('a<br>b<h2>t</h2>');
+    editor.chain().setTextSelection(5).splitBlock().insertContent('c').run(); // at the end: a new paragraph
+    expect(toStoredHtml(editor.getHTML())).toBe('a<br>b<p>c</p><h2>t</h2>');
+    editor.destroy();
   });
 
 });
