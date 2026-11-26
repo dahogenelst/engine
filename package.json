@@ -47,15 +47,12 @@
     "@tiptap/extension-text-align": "^3.35.0",
     "@tiptap/html": "^3.35.0",
     "@tiptap/pm": "^3.35.0",
+    "@tiptap/react": "^3.35.0",
     "@tiptap/starter-kit": "^3.35.0",
     "classnames": "^2.5.1",
     "client-compress": "^2.1.2",
-    "draft-js": "^0.11.7",
-    "draftjs-to-html": "^0.9.1",
-    "html-to-draftjs": "^1.4.0",
     "i18next": "^27.2.3",
     "immutability-helper": "^3.0.1",
-    "immutable": "^3.8.2",
     "lodash": "^4.18.1",
     "memoize-one": "^5.1.1",
     "prop-types": "^15.8.1",
@@ -64,7 +61,6 @@
     "react": "^18.3.1",
     "react-autosuggest": "^10.1.0",
     "react-dom": "^18.3.1",
-    "react-draft-wysiwyg": "^1.15.0",
     "react-image-crop": "^11.1.2",
     "react-js-pagination": "^3.1.0",
     "react-redux": "^9.2.0",
@@ -91,8 +87,5 @@
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
   "engines": {
     "node": ">=24"
-  },
-  "resolutions": {
-    "draft-js/immutable": "~3.8.4"
   }
 }
