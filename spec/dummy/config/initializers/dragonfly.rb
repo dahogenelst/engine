@@ -14,7 +14,7 @@ Dragonfly.app(:engine).configure do
 
   url_format '/images/dynamic/:job/:basename.:ext'
 
-  fetch_file_whitelist /public/
+  fetch_file_whitelist [/public/, %r{/spec/tmp/}] # the assets of the specs are stored in spec/tmp
 
   fetch_url_whitelist /.+/
 end
