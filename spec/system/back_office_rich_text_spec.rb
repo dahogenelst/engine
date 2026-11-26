@@ -65,6 +65,18 @@ describe 'The rich text editor of the back-office', js: true do
     html.gsub(%r{<p></p>|<br>}, '')
   end
 
+  # the drawer shows the list of assets before it listens to the clicks, then slides in:
+  # wait until it is open and the button stands still
+  def pick_asset(command, asset)
+    expect(page).to have_no_css('.drawer.drawer-open')
+    find(".wysihtml5-toolbar a[data-wysihtml5-command='#{command}']").click
+    expect(page).to have_css('.drawer.drawer-open')
+    button = find(".asset a.select[href='#{asset.source.url}']")
+    position = -> { button.evaluate_script('JSON.stringify(this.getBoundingClientRect())') }
+    Timeout.timeout(5) { loop { before = position.(); sleep 0.1; break if position.() == before } }
+    button.click
+  end
+
   def source_view
     find(".wysihtml5-toolbar a[data-wysihtml5-action='change_view']").click
   end
@@ -153,13 +165,11 @@ describe 'The rich text editor of the back-office', js: true do
     open_entry '<p>Hello</p>'
     type :end
 
-    find(".wysihtml5-toolbar a[data-wysihtml5-command='insertImage']").click
-    find(".asset a.select[href='#{image.source.url}']").click
+    pick_asset 'insertImage', image
     in_editor { expect(page).to have_css("img[src='#{image.source.url}']") }
 
     type :end
-    find(".wysihtml5-toolbar a[data-wysihtml5-command='insertFile']").click
-    find(".asset a.select[href='#{pdf.source.url}']").click
+    pick_asset 'insertFile', pdf
     in_editor { expect(page).to have_css("a[href='#{pdf.source.url}']") }
 
     body = save_entry
