@@ -16,6 +16,7 @@ module Locomotive
     def no_site
       respond_to do |format|
         format.html { render 'no_site', status: :not_found }
+        format.any  { head :not_found }
       end
     end
 
