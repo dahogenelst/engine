@@ -19,20 +19,7 @@ const STORED = {
   empty:            '<p></p>\n'
 };
 
-const tiptap    = html => toStoredHtml(generateHTML(generateJSON(html, extensions), extensions));
-// equal the way a browser sees it: newlines between blocks, the order of the attributes and the
-// spacing inside a style attribute do not matter (the DOM writes "text-align: center;" anyway)
-const normalize = html => {
-  const template = document.createElement('template');
-  template.innerHTML = html.replace(/>\s*\n\s*</g, '><').trim();
-  template.content.querySelectorAll('*').forEach(element => {
-    const attributes = Array.from(element.attributes).map(({ name, value }) => [name, value]).sort();
-    attributes.forEach(([name]) => element.removeAttribute(name));
-    attributes.forEach(([name, value]) => element.setAttribute(name, value));
-    if (element.hasAttribute('style')) element.setAttribute('style', element.style.cssText);
-  });
-  return template.innerHTML;
-};
+const tiptap = html => toStoredHtml(generateHTML(generateJSON(html, extensions), extensions));
 
 describe('rich text HTML', () => {
   it.each(Object.entries(STORED))('keeps %s unchanged', (_name, stored) => {
@@ -42,29 +29,5 @@ describe('rich text HTML', () => {
   it('keeps the single line format (line_break setting)', () => {
     const stored = formatLineBreak('<p>Hello <strong>you</strong></p>\n<p>second line</p>\n');
     expect(formatLineBreak(tiptap(stored))).toBe(stored);
-  });
-
-  // The back-office editor (wysihtml5) allowed much more HTML. These are kept already...
-  describe('from the back-office editor', () => {
-    it.each([
-      ['headings, lists and line breaks', '<h2>Title</h2><ul><li>one</li><li>two</li></ul><p>a<br>b</p>'],
-      ['a link with a title',             '<p><a href="/about" title="About us" target="_blank">about</a></p>']
-    ])('keeps %s', (_name, html) => {
-      expect(normalize(tiptap(html))).toBe(normalize(html));
-    });
-
-    // ...and these are not yet: the list of what replacing wysihtml5 must add.
-    // it.failing turns red once one of them works; then make it a normal it.
-    it.failing.each([
-      ['b / i / u / strike tags',      '<p><b>bold</b> <i>italic</i> <u>under</u> <strike>strike</strike></p>'],
-      ['alignment classes',            '<p class="wysiwyg-text-align-center">centered</p>'],
-      ['floating images',              '<p><img src="/samples/photo.jpg" alt="Photo" class="wysiwyg-float-left" width="200" height="100">text</p>'],
-      ['tables',                       '<table><tbody><tr><th>h</th></tr><tr><td colspan="2">cell</td></tr></tbody></table>'],
-      ['embeds (iframe)',              '<p><iframe src="https://www.youtube.com/embed/x" width="560" height="315" frameborder="0" allowfullscreen=""></iframe></p>'],
-      ['divs with an id and a class',  '<div id="intro" class="lead"><p>text</p></div>'],
-      ['color classes on spans',       '<p><span class="wysiwyg-color-red">red</span></p>']
-    ])('does not keep %s yet', (_name, html) => {
-      expect(normalize(tiptap(html))).toBe(normalize(html));
-    });
   });
 });

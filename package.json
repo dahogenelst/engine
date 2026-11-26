@@ -44,6 +44,8 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@tiptap/core": "^3.35.0",
+    "@tiptap/extension-image": "^3.35.0",
+    "@tiptap/extension-table": "^3.35.0",
     "@tiptap/extension-text-align": "^3.35.0",
     "@tiptap/html": "^3.35.0",
     "@tiptap/pm": "^3.35.0",
