@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
 import SlideTransition from '../../components/slide_transition';
 import { compact } from 'lodash';
@@ -8,7 +8,7 @@ import routes from '../../routes';
 
 // HOC
 import withRedux from '../../hoc/with_redux';
-import { withRouter } from 'react-router';
+import withRouter from '../../hoc/with_router';
 
 // Components
 import Header from './header';
@@ -16,6 +16,13 @@ import Header from './header';
 // Views
 import Startup from '../startup';
 import Main from './main';
+
+// routes are exact in react-router 6+; the ones that were not get a splat. Each view gets the
+// history/location/match props it had with react-router 5.
+const routedViews = routes.map(route => ({
+  path: route.exact === true ? route.path : `${route.path}/*`,
+  View: withRouter(route.component)
+}));
 
 class ActionBar extends Component {
 
@@ -44,21 +51,15 @@ class ActionBar extends Component {
             mountOnEnter={true}
             unmountOnExit={true}
           >
-            <Switch location={location}>
-              {!iframeLoaded && <Route path={`/${pageId}/content/edit/`} component={Startup} />}
+            <Routes location={location}>
+              {!iframeLoaded && <Route path={`/${pageId}/content/edit/*`} element={<Startup />} />}
 
-              {routes.map(route => (
-                <Route
-                  key={route.path}
-                  exact={route.exact === true}
-                  path={route.path}
-                  component={route.component}
-                />
+              {routedViews.map(route => (
+                <Route key={route.path} path={route.path} element={<route.View />} />
               ))}
 
-              <Route render={() => <Redirect to={`/${pageId}/content/edit`} />} />
-
-            </Switch>
+              <Route path="*" element={<Navigate to={`/${pageId}/content/edit`} replace />} />
+            </Routes>
           </SlideTransition>
         </TransitionGroup>
       </div>

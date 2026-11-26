@@ -1,5 +1,4 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import { find, pick, bindAll } from 'lodash';
 import { buildClickEvent } from '../utils/misc';
 
