@@ -13,7 +13,7 @@ en:
         locale_switcher:
           locale: "<strong>{{locale}}</strong> version"
 
-        draft:
+        rich_text:
           link:
             title: Insert link
             insert_link: Done

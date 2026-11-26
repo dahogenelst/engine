@@ -55,6 +55,7 @@ export const extensions = [
 
 // Tiptap keeps the text of a list item or a quote in a paragraph; the stored HTML does not
 // (<li>text</li>, <blockquote>text</blockquote>), so a lone paragraph is unwrapped.
+// Each block ends a line, like before (the line_break option relies on "</p>\n<p>").
 export const toStoredHtml = html => {
   const template = document.createElement('template');
   template.innerHTML = html;
@@ -65,5 +66,15 @@ export const toStoredHtml = html => {
       paragraphs[0].replaceWith(...paragraphs[0].childNodes);
   });
 
-  return template.innerHTML;
+  // written like before: "text-align:center;" and the href of a link first
+  template.content.querySelectorAll('[style]').forEach(element =>
+    element.setAttribute('style', element.getAttribute('style').replace(/:\s+/g, ':')));
+  template.content.querySelectorAll('a[target]').forEach(link => {
+    const target = link.getAttribute('target');
+    link.removeAttribute('target');
+    link.setAttribute('target', target);
+  });
+
+  return template.innerHTML
+    .replace(/<(ul|ol)\b[^>]*>|<\/(p|h[1-6]|blockquote|pre|li|ul|ol)>/g, '$&\n');
 };

@@ -244,37 +244,29 @@
 
 // RICH TEXT EDITOR
 
-.DraftEditor-editorContainer, .DraftEditor-root, .public-DraftEditor-content {
-  height: 100%;
-
-  h1 { font-size: 2.4rem; }
-  h2 { font-size: 2.2rem; }
-  h3 { font-size: 2.0rem; }
-  h4 { font-size: 1.8rem; }
-  h5 { font-size: 1.6rem; }
-  h6 { font-size: 1.4rem; }
-}
-
 .editor-input-rich-text {
 
-  .rdw-editor-wrapper {
+  &-wrapper {
     border: 1px solid $gray-lighter;
     border-radius: 3px;
   }
 
-  .rdw-editor-toolbar {
-    position: relative;
-    border: none;
-    margin-bottom: 0px;
-  }
-
-  .rdw-editor-main {
+  &-content {
     border-top: 1px solid $gray-lighter;
     padding: 0rem 0.8rem;
-  }
+    overflow-y: auto;
 
-  .rdw-link-wrapper {
-    position: static;
+    .ProseMirror {
+      min-height: 100%;
+      outline: none;
+    }
+
+    h1 { font-size: 2.4rem; }
+    h2 { font-size: 2.2rem; }
+    h3 { font-size: 2.0rem; }
+    h4 { font-size: 1.8rem; }
+    h5 { font-size: 1.6rem; }
+    h6 { font-size: 1.4rem; }
   }
 
   &-counter {
@@ -286,7 +278,37 @@
 
 }
 
-.rdw-link-modal-actions {
+.editor-rich-text-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  padding: 0.6rem;
+
+  &--group {
+    display: flex;
+    gap: 0.2rem;
+  }
+
+  &--button {
+    min-width: 2.6rem;
+    height: 2.4rem;
+    border: 1px solid $gray-lighter;
+    border-radius: 2px;
+    background: #fff;
+    font-size: 1.1rem;
+
+    &:hover    { box-shadow: 1px 1px 0px $gray-lighter; }
+    &-active   { box-shadow: 1px 1px 0px $gray-lighter inset; background: $gray-lighter; }
+    &:disabled { opacity: 0.3; box-shadow: none; }
+  }
+
+  select {
+    height: 2.4rem;
+    font-size: 1.2rem;
+  }
+}
+
+.editor-rich-text-link-actions {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;

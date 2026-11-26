@@ -1,124 +1,53 @@
-import React, { Component } from 'react';
-import { bindAll } from 'lodash';
-import { EditorState, convertToRaw, ContentState, SelectionState } from 'draft-js';
-import { Editor, defaultToolbar } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
+import React, { useState } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import { extensions, toStoredHtml } from '../rich_text/extensions';
 import { formatLineBreak, stripHTML } from '../utils/misc';
 
 // Components
-import Link from '../components/draft/link.jsx';
+import Toolbar from '../rich_text/toolbar';
 
 const MIN_ROWS    = 8;
 const LINE_HEIGHT = 20;
 
-class RichTextInput extends Component {
+const RichTextInput = ({ setting, label, inputId, value: initialValue, onChange }) => {
+  const [value, setValue] = useState(() => initialValue ?? setting.default ?? '');
 
-  constructor(props) {
-    super(props);
+  const editor = useEditor({
+    extensions,
+    content: value,
+    editorProps: {
+      // like before, pasted text loses its formatting (pages of other sites, Word...)
+      handlePaste: (view, event) => {
+        if (!event.clipboardData?.types.includes('text/html')) return false;
+        return view.pasteText(event.clipboardData.getData('text/plain'));
+      }
+    },
+    onUpdate: ({ editor }) => {
+      let html = toStoredHtml(editor.getHTML());
+      if (setting.line_break) html = formatLineBreak(html);
+      setValue(html);
+      onChange(setting.type, setting.id, html);
+    }
+  });
 
-    var value = props.value;
-    if (value === undefined || value === null) value = props.setting.default || '';
-
-    this.state = {
-      editorState: this.createEditorContent(value),
-      value
-    };
-    
-    this.setDomEditorRef = ref => this.domEditor = ref;
-    
-    bindAll(this, 'inputOnChangeSanitizer', 'editorOnChangeSanitizer', 'focus');
-  }
-
-  componentDidMount() {
-    const { setting }   = this.props;
-    const editorElement = this.input.querySelector('.draftjs-editor');
-
-    if (editorElement)
-      editorElement.style.height = `${(setting.nb_rows || MIN_ROWS) * LINE_HEIGHT}px`;    
-  }
-
-  createEditorContent(html) {
-    const { contentBlocks, entityMap } = htmlToDraft(html);
-    const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-    return EditorState.createWithContent(contentState);
-  }
-
-  inputOnChangeSanitizer(event) {
-    if (event.target)
-      this.updateSectionValue(event.target.value);
-  }
-
-  focus() {
-    this.domEditor.focusEditor();
-    const editorState = EditorState.moveSelectionToEnd(this.state.editorState);
-    this.setState({
-      editorState: EditorState.forceSelection(editorState, editorState.getSelection())
-    });;
-  }
-
-  editorOnChangeSanitizer(editorState) {
-    this.setState({ editorState });
-
-    var value = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-
-    if (this.props.setting.line_break)
-      value = formatLineBreak(value);
-
-    this.updateSectionValue(value);
-  };
-
-  updateSectionValue(value) {
-    this.setState({ value }, () => {
-      this.props.onChange(this.props.setting.type, this.props.setting.id, value)
-    });
-  }
-
-  render() {
-    const { setting, label, inputId } = this.props;
-
-    return (
-      <div className="editor-input editor-input-rich-text" ref={el => this.input = el}>
-        <label className="editor-input--label" htmlFor={inputId} onClick={this.focus}>
-          {label}
-        </label>
-        <div>
-          <Editor
-            editorState={this.state.editorState}
-            wrapperClassName="draftjs-wrapper"
-            editorClassName="draftjs-editor"
-            toolbarClassName="draftjs-toolbar"
-            toolbar={RichTextInput.mytoolbar(setting.line_break !== true)}
-            onEditorStateChange={this.editorOnChangeSanitizer}
-            stripPastedStyles={true}
-            ref={this.setDomEditorRef}
-          />
-          <div className="editor-input-rich-text-counter">
-            {stripHTML(this.state.value).length}
-          </div>
-        </div>
+  return (
+    <div className="editor-input editor-input-rich-text">
+      <label className="editor-input--label" htmlFor={inputId} onClick={() => editor.commands.focus('end')}>
+        {label}
+      </label>
+      <div className="editor-input-rich-text-wrapper">
+        <Toolbar editor={editor} extended={setting.line_break !== true} />
+        <EditorContent
+          editor={editor}
+          className="editor-input-rich-text-content"
+          style={{ height: `${(setting.nb_rows || MIN_ROWS) * LINE_HEIGHT}px` }}
+        />
       </div>
-    );
-  }
-}
-
-RichTextInput.mytoolbar = extended => {
-  const options = extended ?
-    ['inline', 'textAlign', 'blockType', 'list', 'link'] :
-    ['inline', 'link'];
-
-  return Object.assign({
-    options,
-    link: { component: Link, showOpenOptionOnHover: false },
-    inline: {
-      options: ['bold', 'italic', 'underline', 'strikethrough']
-    },
-    textAlign: {
-      options: ['left', 'center', 'right', 'justify']
-    },
-    list: {
-      options: ['unordered', 'ordered']
-  } }, defaultToolbar);
+      <div className="editor-input-rich-text-counter">
+        {stripHTML(value).length}
+      </div>
+    </div>
+  );
 };
 
 export default RichTextInput;

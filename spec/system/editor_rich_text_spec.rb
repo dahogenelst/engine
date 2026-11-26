@@ -35,8 +35,7 @@ describe 'Editing a rich text setting of a section', js: true do
   end
 
   def block_type(name)
-    find('.editor-input-rich-text [title="Block Type"]').click
-    find('.rdw-dropdownoption-default', text: name, exact_text: true).click
+    find('.editor-input-rich-text [title="Block Type"]').select(name)
   end
 
   def saved_body
@@ -97,8 +96,7 @@ describe 'Editing a rich text setting of a section', js: true do
     body     = saved_body
     contact  = @site.pages.where(slug: 'contact').first
     resource = body[%r{/_locomotive-link/([^"]+)"}, 1]
-    # draft-js puts a space after an inserted link
-    expect(body).to match(%r{\A<p><a href="http://[^"]+/locomotive/#{@site.handle}/preview/_locomotive-link/[^"]+" target="_blank">Hello</a>(&nbsp;)?</p>\n\z})
+    expect(body).to match(%r{\A<p><a href="http://[^"]+/locomotive/#{@site.handle}/preview/_locomotive-link/[^"]+" target="_blank">Hello</a></p>\n\z})
     expect(JSON.parse(Base64.decode64(resource))).to include('type' => 'page', 'value' => contact._id.to_s, 'new_window' => true)
   end
 
@@ -127,6 +125,21 @@ describe 'Editing a rich text setting of a section', js: true do
     expect(editor).to have_text('world')
 
     expect(saved_body).to eq "Hello<br>world\n"
+  end
+
+  it 'pastes text without its formatting' do
+    open_intro body: '<p>Hello&nbsp;</p>', line_break: true
+    find('.editor-input-rich-text label', text: /\Abody\z/i).click # the cursor at the end
+    editor.execute_script(<<~JS)
+      const data = new DataTransfer();
+      data.setData('text/html', '<h2>Big <em>title</em></h2><ul><li>item</li></ul>');
+      data.setData('text/plain', 'Big title\\nitem');
+      this.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }));
+    JS
+    expect(editor).to have_text('item')
+    expect(editor).to have_no_css('h2, em, ul')
+
+    expect(saved_body).to eq "Hello&nbsp;Big title<br>item\n"
   end
 
   it 'counts the characters and sizes the editor to the nb_rows option' do
