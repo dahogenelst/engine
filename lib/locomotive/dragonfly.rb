@@ -5,8 +5,7 @@ module Locomotive
 
     def self.resize_url(source, resize_string, timestamp = nil)
       if file = self.fetch_file(source)
-        url = file.thumb(resize_string).url
-        timestamp ? url + "?#{timestamp}" : url
+        with_timestamp(file.thumb(resize_string).url, timestamp)
       else
         Locomotive.log :error, "Unable to resize on the fly: #{source.inspect}"
         return
@@ -15,8 +14,7 @@ module Locomotive
 
     def self.thumbnail_pdf(source, resize_string, timestamp = nil)
       if file = self.fetch_file(source)
-        url = file.thumb(resize_string, format: 'png', frame: 0).encode('png').url
-        timestamp ? url + "?#{timestamp}" : url
+        with_timestamp(file.thumb(resize_string, format: 'png', frame: 0).encode('png').url, timestamp)
       else
         Locomotive.log :error, "Unable to convert the pdf: #{source.inspect}"
         return
@@ -53,6 +51,12 @@ module Locomotive
     end
 
     protected
+
+    # the url has a query string when the sha is not part of its path (url_format)
+    def self.with_timestamp(url, timestamp)
+      return url unless timestamp
+      "#{url}#{url.include?('?') ? '&' : '?'}#{timestamp}"
+    end
 
     def self.clean_source(source)
       # remove the leading / trailing whitespaces
