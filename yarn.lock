@@ -3939,10 +3939,10 @@ mdn-data@2.0.30:
   resolved "https://registry.npmjs.org/mdn-data/-/mdn-data-2.0.30.tgz#ce4df6f80af6cfbe218ecd5c552ba13c4dfa08cc"
   integrity sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==
 
-memoize-one@^5.1.1:
-  version "5.2.1"
-  resolved "https://registry.npmjs.org/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
-  integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
+memoize-one@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-7.0.0.tgz#4024830d99b28984488517169f5686eba900525d"
+  integrity sha512-2N/rFuzS9eTTDXVmo/PO86KmapXPCOqDgR3eOnmWW1NVW8YXGzXcTWMKiGq/VAsYVl42Pd8rQ2DMsoYunIATLw==
 
 merge-stream@^2.0.0:
   version "2.0.0"
