@@ -25,7 +25,7 @@ GIT
 
 GIT
   remote: https://github.com/dahogenelst/steam.git
-  revision: 4128642f9338f2f9be928ebf67b63b61f120fa0b
+  revision: a05935a476923d9cbaa8cefdb9484eb8171a235b
   branch: master
   specs:
     locomotivecms_steam (1.8.0.alpha2)
@@ -35,7 +35,7 @@ GIT
       dragonfly (~> 1.4)
       duktape (~> 2.0)
       execjs (~> 2.9)
-      httparty (~> 0.22)
+      httparty (~> 0.24)
       kramdown (~> 2.3)
       liquid (~> 4.0)
       locomotivecms_common (~> 0.6.0.alpha1)
@@ -211,7 +211,10 @@ GEM
     bootstrap-sass (3.4.1)
       autoprefixer-rails (>= 5.2.1)
       sassc (>= 2.0.0)
-    bson (5.2.0)
+    bson (5.2.1)
+      base64
+      bigdecimal
+      ostruct
     builder (3.3.0)
     capybara (3.40.0)
       addressable
@@ -407,7 +410,7 @@ GEM
     mongo (2.26.2)
       base64
       bson (>= 4.14.1, < 6.0.0)
-    mongoid (9.1.2)
+    mongoid (9.1.3)
       activemodel (>= 5.1, < 8.2, != 7.0.0)
       concurrent-ruby (>= 1.0.5, < 2.0)
       mongo (>= 2.18.0, < 3.0.0)
