@@ -3,7 +3,7 @@
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
 
-const ALIGNABLE = ['heading', 'paragraph'];
+const ALIGNABLE = ['heading', 'paragraph', 'listItem']; // draft-js aligned list items too
 
 export const extensions = [
   StarterKit.configure({

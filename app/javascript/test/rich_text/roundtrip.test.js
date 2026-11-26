@@ -13,6 +13,7 @@ const STORED = {
   alignment:        '<p style="text-align:center;">centered</p>\n<p style="text-align:right;">right</p>\n<p style="text-align:justify;">justified</p>\n',
   headings:         '<h1>One</h1>\n<h2>Two</h2>\n<h3>Three</h3>\n<h4>Four</h4>\n<h5>Five</h5>\n<h6>Six</h6>\n<blockquote>Quote</blockquote>\n<pre>code</pre>\n',
   aligned_heading:  '<h2 style="text-align:center;">Centered title</h2>\n',
+  aligned_list:     '<ul>\n<li style="text-align:center;">one</li>\n<li>two</li>\n</ul>\n',
   lists:            '<ul>\n<li>one</li>\n<li>two</li>\n</ul>\n<ol>\n<li>first</li>\n<li>second</li>\n</ol>\n',
   links:            `<p><a href="${LINK}" target="_blank">to a page</a> and <a href="https://example.com" target="_self">external</a></p>\n`,
   entities:         '<p>café &lt;tag&gt; a&nbsp;b "quote"</p>\n',

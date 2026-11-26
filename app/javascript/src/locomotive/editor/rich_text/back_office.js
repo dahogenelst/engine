@@ -38,20 +38,33 @@ const Attributes = Extension.create({
     },
     { types: ['link'], attributes: { id: { default: null } } }, // it has its class already
     { types: ['div', 'span', 'link'], attributes: { data } },
-    { types: ['blockquote'], attributes: { cite: { default: null } } }
+    { types: ['blockquote'], attributes: { cite: { default: null } } },
+    // its text was stored without a paragraph (wysihtml5) or in one (pasted from Word...)
+    { types: ['listItem', 'blockquote', 'tableCell', 'tableHeader'], attributes: { bare: {
+      default: true,
+      parseHTML: element => Array.from(element.childNodes).find(node => node.nodeType === 1 || node.textContent.trim())?.tagName !== 'P',
+      renderHTML: ({ bare }) => bare ? { 'data-bare': '' } : {}
+    } } },
+    // text stored outside a paragraph (see toEditorHtml); a paragraph split from it is a normal one
+    { types: ['paragraph'], attributes: { loose: {
+      default: false, keepOnSplit: false,
+      parseHTML: element => element.hasAttribute('data-loose'),
+      renderHTML: ({ loose }) => loose ? { 'data-loose': '' } : {}
+    } } }
   ]
 });
 
 const Div = Node.create({
   name: 'div',
   group: 'block',
-  content: 'block+',
+  content: 'block*', // an empty div is kept empty (a placeholder filled by a script: forms...)
   parseHTML: () => [{ tag: 'div' }],
   renderHTML: ({ HTMLAttributes }) => ['div', HTMLAttributes, 0]
 });
 
 const Span = Mark.create({
   name: 'span',
+  excludes: '', // spans in spans (pasted from Word...)
   parseHTML: () => [{ tag: 'span' }],
   renderHTML: ({ HTMLAttributes }) => ['span', HTMLAttributes, 0]
 });
@@ -123,6 +136,29 @@ const rank = (order, name) => {
   return index === -1 ? order.length : index;
 };
 
+const BLOCKS = /^(P|H[1-6]|UL|OL|LI|BLOCKQUOTE|PRE|TABLE|DIV|HR|FIGURE|ADDRESS|FORM|VIDEO)$/;
+
+// The stored HTML, ready for Tiptap: text outside a paragraph (in the content or in a div) is
+// wrapped in a marked paragraph, unwrapped again by toStoredHtml.
+export const toEditorHtml = html => {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  [template.content, ...template.content.querySelectorAll('div')].forEach(container => {
+    let paragraph = null;
+    Array.from(container.childNodes).forEach(node => {
+      if (node.nodeType === 1 && BLOCKS.test(node.tagName)) return (paragraph = null);
+      if (!paragraph && node.nodeType === 3 && !node.textContent.trim()) return; // spaces between blocks
+      if (!paragraph) {
+        paragraph = document.createElement('p');
+        paragraph.setAttribute('data-loose', '');
+        node.before(paragraph);
+      }
+      paragraph.append(node);
+    });
+  });
+  return template.innerHTML;
+};
+
 // The HTML Tiptap gives, written the way it was stored. With inline (editable texts on one line),
 // the text is not wrapped in a paragraph.
 export const toStoredHtml = (html, { inline = false } = {}) => {
@@ -131,11 +167,18 @@ export const toStoredHtml = (html, { inline = false } = {}) => {
   const content = template.content;
 
   // Tiptap keeps the text of a list item, a quote or a cell in a paragraph, wysihtml5 did not
-  content.querySelectorAll('li, blockquote, td, th').forEach(element => {
+  content.querySelectorAll('[data-bare]').forEach(element => {
+    element.removeAttribute('data-bare');
     const paragraphs = Array.from(element.children).filter(child => child.tagName === 'P');
     if (paragraphs.length === 1 && element.firstElementChild === paragraphs[0] && !paragraphs[0].attributes.length)
       paragraphs[0].replaceWith(...paragraphs[0].childNodes);
   });
+
+  // text outside a paragraph: split in two (Enter), its parts stay on their own lines
+  const loose = Array.from(content.querySelectorAll('p[data-loose]'));
+  loose.filter(paragraph => paragraph.previousElementSibling?.matches('p[data-loose]'))
+    .forEach(paragraph => paragraph.prepend(document.createElement('br')));
+  loose.forEach(paragraph => paragraph.replaceWith(...paragraph.childNodes));
 
   content.querySelectorAll('table').forEach(table => {
     const rows = Array.from(table.querySelectorAll(':scope > tbody > tr'));
@@ -163,20 +206,60 @@ export const toStoredHtml = (html, { inline = false } = {}) => {
   return template.innerHTML;
 };
 
-// HTML as the browser sees it: the order of the attributes and the spaces between blocks do not matter
-const normalize = html => {
+// HTML as the browser shows it: the order of the attributes does not matter, nor the spaces between
+// blocks, at their edges or next to a line break, and a run of spaces is one space (outside a pre).
+// Formatting (plain tags, spans) is compared per piece of text: <i>a <a>b</a></i> is <i>a </i><a><i>b</i></a>.
+const FORMATTING = /^(B|STRONG|I|EM|U|INS|STRIKE|S|DEL)$/;
+const SPACES_AROUND = /\s*(<\/?(?:p|h[1-6]|ul|ol|li|div|blockquote|table|thead|tbody|tfoot|tr|td|th)\b[^>]*>|<br>)\s*/g;
+export const normalize = html => {
   const template = document.createElement('template');
-  template.innerHTML = html.replace(/>\s+</g, '><').trim();
+  template.innerHTML = html;
+  const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode())
+    if (!walker.currentNode.parentElement?.closest('pre'))
+      walker.currentNode.textContent = walker.currentNode.textContent.replace(/[ \t\n\r\f]+/g, ' ');
+  template.innerHTML = template.innerHTML.replace(SPACES_AROUND, '$1').trim();
   template.content.querySelectorAll('*').forEach(element => {
     const attributes = Array.from(element.attributes).map(({ name, value }) => [name, value]).sort();
     attributes.forEach(([name]) => element.removeAttribute(name));
     attributes.forEach(([name, value]) => element.setAttribute(name, value));
   });
-  return template.innerHTML;
+  // spaces at the edge of a block or next to a line break do not show, formatted or not
+  const list = pieces(template.content);
+  list.forEach((piece, index) => {
+    if (piece.text === undefined) return;
+    if (BOUNDARY.test(list[index - 1]?.html ?? '<p>')) piece.text = piece.text.trimStart();
+    if (BOUNDARY.test(list[index + 1]?.html ?? '</p>')) piece.text = piece.text.trimEnd();
+  });
+  return list.filter(piece => piece.text !== '').map(piece => piece.html ?? `[${piece.formats}]${piece.text}`).join('');
 };
+const BOUNDARY = /^(<\/?(p|h[1-6]|ul|ol|li|div|blockquote|table|thead|tbody|tfoot|tr|td|th)\b|<br)/;
+
+// a formatting tag without attributes, or a span (with its attributes): what it adds to a piece of text
+const format = element =>
+  (FORMATTING.test(element.tagName) && !element.attributes.length) || element.localName === 'span' ?
+    element.cloneNode(false).outerHTML : null;
+const pieces = (node, formats = []) => Array.from(node.childNodes).reduce((list, child) => {
+  if (child.nodeType === 3) {
+    const last = list[list.length - 1];
+    if (last?.formats === formats.join()) last.text += child.textContent;
+    else if (child.textContent) list.push({ formats: formats.join(), text: child.textContent });
+  } else if (child.nodeType === 1 && format(child)) {
+    pieces(child, [...new Set([...formats, format(child)])].sort()).forEach(piece => {
+      const last = list[list.length - 1];
+      if (piece.text !== undefined && last?.formats === piece.formats) last.text += piece.text;
+      else list.push(piece);
+    });
+  } else if (child.nodeType === 1) {
+    const shell = child.cloneNode(false).outerHTML;
+    const close = shell.endsWith(`</${child.localName}>`) ? `</${child.localName}>` : '';
+    list.push({ html: shell.slice(0, shell.length - close.length) }, ...pieces(child, formats), { html: close });
+  }
+  return list;
+}, []);
 
 export const roundtrip = (html, options) =>
-  toStoredHtml(generateHTML(generateJSON(html, extensions), extensions), options);
+  toStoredHtml(generateHTML(generateJSON(toEditorHtml(html), extensions), extensions), options);
 
 // Can the editor open this HTML without changing it? If not, it is edited as source.
 export const keepsHtml = (html, options) => normalize(roundtrip(html, options)) === normalize(html);
