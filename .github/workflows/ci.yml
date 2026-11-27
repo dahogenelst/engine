@@ -60,7 +60,7 @@ jobs:
       - run: yarn build:dev
       - name: Rebuilt bundle is committed (Dependabot PRs get it pushed, everyone else must commit it)
         env:
-          BUNDLE: app/assets/javascripts/locomotive/editor.js app/assets/stylesheets/locomotive/editor.css
+          BUNDLE: app/assets/javascripts/locomotive/editor.js app/assets/javascripts/locomotive/rich_text.js app/assets/stylesheets/locomotive/editor.css
         run: |
           git diff --quiet -- $BUNDLE && exit 0
           if [ "${{ github.event_name }}" = pull_request ] && [ "${{ github.actor }}" = 'dependabot[bot]' ]; then
@@ -70,7 +70,7 @@ jobs:
             git push origin HEAD:${{ github.head_ref }}
           else
             git diff --stat -- $BUNDLE
-            echo "::error::editor.js / editor.css are out of date: run 'yarn build:dev' and commit them"
+            echo "::error::editor.js / rich_text.js / editor.css are out of date: run 'yarn build:dev' and commit them"
             exit 1
           fi
 

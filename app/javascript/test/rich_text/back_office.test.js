@@ -1,5 +1,5 @@
 import { Editor } from '@tiptap/core';
-import { roundtrip, keepsHtml, extensions, toEditorHtml, toStoredHtml } from '../../../javascript/src/locomotive/editor/rich_text/back_office';
+import { roundtrip, keepsHtml, extensions, toEditorHtml, toStoredHtml, sanitize } from '../../../javascript/src/locomotive/editor/rich_text/back_office';
 
 // HTML as the back-office editor (wysihtml5) stored it: opened in the new editor and saved again,
 // it must come back byte for byte (the same fixture as spec/system/back_office_rich_text_spec.rb).
@@ -75,6 +75,17 @@ describe('back-office rich text HTML', () => {
     editor.chain().setTextSelection(5).splitBlock().insertContent('c').run(); // at the end: a new paragraph
     expect(toStoredHtml(editor.getHTML())).toBe('a<br>b<p>c</p><h2>t</h2>');
     editor.destroy();
+  });
+
+  it('keeps an empty text', () => {
+    expect(keepsHtml('')).toBe(true);
+  });
+
+  it('removes from the source what runs a script, and nothing else', () => {
+    const html = '<p class="x" style="color:red" data-y="1">a<br/>b <a href="/about">c</a></p>';
+    expect(sanitize(html)).toBe(html);
+    expect(sanitize('<p onclick="x()" class="a">y</p><script>alert(1)</script><a href=" jav\tascript:alert(1)" title="t">z</a><img src="javascript:x" alt="i">'))
+      .toBe('<p class="a">y</p><a title="t">z</a><img alt="i">');
   });
 
 });

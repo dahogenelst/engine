@@ -11,6 +11,7 @@
 //= require locomotive/codemirror
 //= require locomotive/codemirror/modes/markdown
 //= require locomotive/vendor
+//= require locomotive/rich_text
 //= require ./locomotive/application
 
 $(document).ready(function() {

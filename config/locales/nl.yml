@@ -51,6 +51,7 @@ nl:
         updated_by: "Laatst gewijzigd %{distance} geleden door %{who}"
       rte:
         toolbar:
+          source_notice: "De editor zou de HTML van deze tekst aanpassen, daarom wordt de bron getoond. Klik op </> om toch visueel te bewerken."
           table:
             merge: Samenvoegen
             insert_row_before: Voeg rij in ervoor

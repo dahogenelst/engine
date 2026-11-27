@@ -22,7 +22,7 @@ describe 'The rich text editor of the back-office', js: true do
   def open_entry(body)
     @entry = @content_type.entries.create!(title: 'Note', body: body)
     visit "/locomotive/#{@site.handle}/content_types/notes/entries/#{@entry._id}/edit"
-    expect(page).to have_css('.wysihtml5-sandbox')
+    expect(page).to have_css('.rte-content .ProseMirror', visible: :all)
   end
 
   def save_entry
@@ -33,34 +33,34 @@ describe 'The rich text editor of the back-office', js: true do
 
   # the text being edited
   def in_editor(&block)
-    within_frame(find('.wysihtml5-sandbox'), &block)
+    within(find('.rte-content .ProseMirror'), &block)
   end
 
   def type(*keys)
-    in_editor { find('body').click; find('body').send_keys(*keys) }
+    find('.rte-content .ProseMirror').click
+    find('.rte-content .ProseMirror').send_keys(*keys)
   end
 
   def select_all
-    in_editor { find('body').click; find('body').send_keys(SELECT_ALL) }
+    type SELECT_ALL
   end
 
   BUTTONS = {
-    bold: 'formatInline', italic: 'italic', underline: 'underline', strike: 'strike',
-    left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight', justify: 'justifyFull',
-    bullets: 'insertUnorderedList', numbers: 'insertOrderedList',
-    link: 'createLink', unlink: 'removeLink', table: 'createTable'
+    bold: "[data-command='bold']", italic: "[data-command='italic']", underline: "[data-command='underline']",
+    strike: "[data-command='strike']", center: "[data-command='align'][data-value='center']",
+    bullets: "[data-command='bullets']", link: '.link', table: '.table'
   }
 
   def toolbar(name)
-    find(".wysihtml5-toolbar a[data-wysihtml5-command='#{BUTTONS.fetch(name)}']").click
+    find(".rte-toolbar a#{BUTTONS.fetch(name)}").click
   end
 
-  def block_type(name) # H1..H6, P, Code, Pre or the quote
-    find('.wysihtml5-toolbar a.style').click
-    within('.popover') { find("a[data-wysihtml5-command-value='#{name}']").click }
+  def block_type(name) # h1..h6, p, pre or blockquote
+    find('.rte-toolbar a.style').click
+    within('.popover') { find("a[data-value='#{name}']").click }
   end
 
-  # wysihtml5 leaves empty paragraphs around a list or a table, and a <br> in an empty cell
+  # empty paragraphs around a list or a table (the previous editor left them), and a <br> in an empty cell
   def without_empty_blocks(html)
     html.gsub(%r{<p></p>|<br>}, '')
   end
@@ -69,7 +69,7 @@ describe 'The rich text editor of the back-office', js: true do
   # wait until it is open and the button stands still
   def pick_asset(command, asset)
     expect(page).to have_no_css('.drawer.drawer-open')
-    find(".wysihtml5-toolbar a[data-wysihtml5-command='#{command}']").click
+    find(".rte-toolbar a.#{command}").click
     expect(page).to have_css('.drawer.drawer-open')
     button = find(".asset a.select[href='#{asset.source.url}']")
     position = -> { button.evaluate_script('JSON.stringify(this.getBoundingClientRect())') }
@@ -78,7 +78,7 @@ describe 'The rich text editor of the back-office', js: true do
   end
 
   def source_view
-    find(".wysihtml5-toolbar a[data-wysihtml5-action='change_view']").click
+    find('.rte-toolbar a.source').click
   end
 
   it 'keeps the HTML it wrote itself when the field is not touched' do
@@ -93,9 +93,18 @@ describe 'The rich text editor of the back-office', js: true do
     expect(save_entry).to eq html
   end
 
-  it 'removes scripts and event handlers' do
+  it 'keeps the HTML as it is stored when the field is not touched' do
+    html = %{<p class="lead" id="intro">a</p><p>b</p>} # written by the editor: id first
+    open_entry html
+    in_editor { expect(page).to have_css('p.lead') }
+    expect(save_entry).to eq html
+  end
+
+  it 'shows HTML it would change as source, without scripts and event handlers' do
     open_entry %{<p onclick="x()">y</p><script>alert(1)</script><p style="color:red">styled</p>}
-    expect(save_entry).to eq %{<p>y</p><p>styled</p>}
+    expect(page).to have_css('.rte-source-notice', visible: true)
+    expect(page).to have_no_css('.rte-content', visible: true)
+    expect(save_entry).to eq %{<p>y</p><p style="color:red">styled</p>}
   end
 
   it 'makes text bold, italic, underlined and struck through' do
@@ -165,11 +174,11 @@ describe 'The rich text editor of the back-office', js: true do
     open_entry '<p>Hello</p>'
     type :end
 
-    pick_asset 'insertImage', image
+    pick_asset 'image', image
     in_editor { expect(page).to have_css("img[src='#{image.source.url}']") }
 
     type :end
-    pick_asset 'insertFile', pdf
+    pick_asset 'file', pdf
     in_editor { expect(page).to have_css("a[href='#{pdf.source.url}']") }
 
     body = save_entry
@@ -187,11 +196,18 @@ describe 'The rich text editor of the back-office', js: true do
     expect(save_entry).to eq %{<p class="lead">Edited</p>}
   end
 
+  it 'removes scripts from the source when it is saved as is' do
+    open_entry '<p>Hello</p>'
+    source_view
+    find('.input.rte textarea').set(%{<p onclick="x()">Edited</p><script>alert(1)</script>})
+    expect(save_entry).to eq %{<p>Edited</p>}
+  end
+
   it 'counts the characters' do
     open_entry '<p>Hello <b>you</b></p>'
-    expect(page).to have_css('.wysihtml5-counter', text: /\A9\z/)
+    expect(page).to have_css('.rte-counter', text: /\A9\z/)
     type :end, '!'
-    expect(page).to have_css('.wysihtml5-counter', text: /\A10\z/)
+    expect(page).to have_css('.rte-counter', text: /\A10\z/)
     expect(save_entry).to eq '<p>Hello <b>you!</b></p>'
   end
 
@@ -199,16 +215,16 @@ describe 'The rich text editor of the back-office', js: true do
     page_with_text = @site.pages.create!(parent: @site.pages.root.first, title: 'Inline', slug: 'inline',
       raw_template: %{<html><body><h1>{% editable_text title, format: 'html', inline: true %}Hello<br>world{% endeditable_text %}</h1></body></html>})
     visit "/locomotive/#{@site.handle}/pages/#{page_with_text._id}/editable_elements"
-    expect(page).to have_css('.wysihtml5-sandbox')
-    expect(page).to have_no_css(".wysihtml5-toolbar a[data-wysihtml5-command='justifyCenter']")
-    expect(page).to have_no_css(".wysihtml5-toolbar a[data-wysihtml5-command='createTable']")
+    expect(page).to have_css('.rte-content .ProseMirror')
+    expect(page).to have_no_css(".rte-toolbar a[data-command='align']")
+    expect(page).to have_no_css('.rte-toolbar a.table')
 
-    type :end, '!'
-    in_editor { expect(page).to have_text('world!') }
+    type :end, '!', :enter, 'again'
+    in_editor { expect(page).to have_text('again') }
     click_button 'Save'
     expect(page).to have_content(/successfully updated|saved/i)
 
-    expect(page_with_text.reload.editable_elements.first.content).to eq 'Hello<br>world!'
+    expect(page_with_text.reload.editable_elements.first.content).to eq 'Hello<br>world!<br>again'
   end
 
 end

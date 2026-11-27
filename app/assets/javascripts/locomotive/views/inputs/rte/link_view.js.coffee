@@ -4,19 +4,14 @@ class Locomotive.Views.Inputs.Rte.LinkView extends Backbone.View
 
   isOpen: false
 
-  container:
-    dataset:
-      showdialogonselection: false
-
   initialize: ->
     _.bindAll(@, 'apply', 'show', 'hide')
 
-    @$link      = @$('a[data-wysihtml5-command=createLink]')
-    @editor     = @options.editor
+    @rte        = @options.rte
+    @$link      = @$('.rte-toolbar a.link')
     @$content   = @$link.next('.link-dialog-content')
 
   render: ->
-    @attach_editor()
     @create_popover()
     @attach_events()
 
@@ -33,56 +28,50 @@ class Locomotive.Views.Inputs.Rte.LinkView extends Backbone.View
     @$link.data('bs.popover').setContent()
 
   attach_events: ->
+    @$link.on 'click', @show
     @$content.on 'click', '.apply', @apply
     @$content.on 'click', '.cancel', @hide
 
   detach_events: ->
+    @$link.off 'click', @show
     @$content.off 'click', '.apply', @apply
     @$content.off 'click', '.cancel', @hide
 
-  attach_editor: ->
-    command = @editor.toolbar.commandMapping['createLink:null']
-    command.dialog = @
-
   apply: (event) ->
+    event.preventDefault()
     url = @_input_el('url').val()
 
     unless _.isEmpty(url)
-      @editor.composer.commands.exec 'createLink',
+      @rte.link
         href:   url
         target: @_input_el('target', 'select').val()
         title:  @_input_el('title').val()
 
-      # prevents the popover to be opened right after inserting the link.
-      @editor.toolbar._preventInstantFocus()
+    @hide()
 
-      @hide()
+  # filled with the link under the cursor, if any
+  show: (event) ->
+    event?.preventDefault()
+    return @hide() if @isOpen
 
-  show: (state) ->
-    # Fix a bug when opening an existing link for the first time
-    return if @isOpen && state != false
+    link = @rte.editor.getAttributes('link')
 
-    # Make sure the select2 behavioir is always enabled
-    @_input_el('target', 'select').select2()
-    @_input_el('target', 'select').data('select2').$dropdown.addClass('rte-select2-dropdown')
+    # Make sure the select2 behavior is always enabled
+    $target = @_input_el('target', 'select')
+    $target.select2()
+    $target.data('select2').$dropdown.addClass('rte-select2-dropdown')
 
-    if state == false
-      @$content.parents('form')[0].reset()
-    else
-      $link = $(state)
-      @_input_el('url').val($link.attr('href'))
-      @_input_el('target', 'select').val($link.attr('target'))
-      @_input_el('title').val($link.attr('title'))
+    @_input_el('url').val(link.href || '')
+    $target.val(link.target || '').trigger('change')
+    @_input_el('title').val(link.title || '')
 
-    @$link.popover('toggle')
+    @$link.popover('show')
     @_input_el('url').trigger('focus') # first field
 
     @isOpen = true
 
-  update: (state) ->
-    # do nothing
-
-  hide: ->
+  hide: (event) ->
+    event?.preventDefault()
     @_input_el('target', 'select').select2('close')
     @$link.popover('hide')
     @isOpen = false
@@ -96,4 +85,3 @@ class Locomotive.Views.Inputs.Rte.LinkView extends Backbone.View
     @detach_events()
     @$link.popover('destroy')
     @$('.popover').remove()
-

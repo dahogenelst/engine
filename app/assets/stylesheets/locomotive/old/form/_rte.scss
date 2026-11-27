@@ -4,10 +4,10 @@
 
     .form-wrapper {
 
-      .wysihtml5-toolbar {
+      .rte-toolbar {
         padding: 6px 12px;
 
-        > .wysihtml5-toolbar-group {
+        > .rte-toolbar-group {
           margin-right: 20px;
 
           &:last-child {
@@ -21,7 +21,7 @@
           margin-right: 6px;
           cursor: pointer;
 
-          &.wysihtml5-command-active {
+          &.rte-command-active {
             color: $form_input_rte_command_active_color;
           }
         }
@@ -30,7 +30,52 @@
 
     }
 
-    .wysihtml5-counter {
+    // the text being edited (a form-control, like the textarea of the source)
+    .rte-content {
+      height: auto;
+      min-height: 200px;
+      overflow: auto;
+
+      .ProseMirror {
+        min-height: 180px;
+        outline: none;
+      }
+
+      table {
+        border-collapse: collapse;
+
+        th, td {
+          border: 1px solid #ddd;
+          padding: 4px 8px;
+          min-width: 2em;
+        }
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      .ProseMirror-selectednode {
+        outline: 2px solid $form_input_rte_command_active_color;
+      }
+    }
+
+    textarea {
+      min-height: 200px;
+    }
+
+    .rte-toolbar.rte-source a[data-command], .rte-toolbar.rte-source a.style, .rte-toolbar.rte-source a.link,
+    .rte-toolbar.rte-source a.image, .rte-toolbar.rte-source a.file, .rte-toolbar.rte-source a.table {
+      visibility: hidden; // only the source can be edited
+    }
+
+    .rte-source-notice {
+      padding: 0 12px 6px; // like the toolbar
+      font-size: 12px;
+      color: #8a6d3b;
+    }
+
+    .rte-counter {
       margin-top: 5px;
       text-align: right;
     }

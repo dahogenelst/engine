@@ -2,25 +2,16 @@ Locomotive.Views.Inputs.Rte ||= {}
 
 class Locomotive.Views.Inputs.Rte.TableView extends Backbone.View
 
-  container:
-    dataset: []
-
   initialize: ->
-    _.bindAll(@, 'apply', 'show', 'hide', 'show_link', 'hide_link')
+    _.bindAll(@, 'apply', 'show', 'hide')
 
-    @$link    = @$('a[data-wysihtml5-command=createTable]')
-    @editor   = @options.editor
+    @rte      = @options.rte
+    @$link    = @$('.rte-toolbar a.table')
     @$content = @$link.next('.table-dialog-content')
 
   render: ->
     return if @$link.length == 0
 
-    @create_popover()
-
-    @attach_events()
-    @attach_editor()
-
-  create_popover: ->
     @$content.show()
     @$link.popover
       container:  @$link.parents('fieldset')
@@ -32,49 +23,28 @@ class Locomotive.Views.Inputs.Rte.TableView extends Backbone.View
       template:   '<div class="popover" role="tooltip"><div class="arrow"></div><form class="simple_form"><div class="popover-content"></div></form></div>'
     @$link.data('bs.popover').setContent()
 
-  attach_events: ->
-    @$content.on 'click', '.apply',       @apply
-    @$content.on 'click', '.cancel',      @hide
-    @editor.on 'tableselect:composer',    @hide_link
-    @editor.on 'tableunselect:composer',  @show_link
-
-  detach_events: ->
-    @$content.off 'click', '.apply',                @apply
-    @$content.off 'click', '.cancel',               @hide
-    @editor.stopObserving 'tableselect:composer',   @hide_link
-    @editor.stopObserving 'tableunselect:composer', @show_link
-
-  attach_editor: ->
-    command = @editor.toolbar.commandMapping['createTable:null']
-    command.dialog = @
+    @$link.on 'click', @show
+    @$content.on 'click', '.apply',  @apply
+    @$content.on 'click', '.cancel', @hide
 
   apply: (event) ->
-    @editor.composer.commands.exec 'createTable',
-      cols:       @_input_el('cols').val()
-      rows:       @_input_el('rows').val()
-      class_name: @_input_el('class_name').val()
+    event.preventDefault()
+    @rte.table
+      cols:       parseInt(@_input_el('cols').val()) || 1
+      rows:       parseInt(@_input_el('rows').val()) || 1
+      className:  @_input_el('class_name').val()
       head:       @_input_el('head').last().bootstrapSwitch('state')
 
     @hide()
 
-  show: (state) ->
-    # console.log "[TableView] show (#{state})"
+  show: (event) ->
+    event.preventDefault()
+    @$content.parents('form')[0].reset()
     @$link.popover('toggle')
 
-    @$content.parents('form')[0].reset()
-
-  update: (state) ->
-    # do nothing
-
-  hide: ->
-    # console.log "[TableView] hide"
+  hide: (event) ->
+    event?.preventDefault()
     @$link.popover('hide')
-
-  show_link: ->
-    @$link.show()
-
-  hide_link: ->
-    @$link.hide()
 
   _input_el: (property, type) ->
     type ||= 'input'
@@ -82,7 +52,8 @@ class Locomotive.Views.Inputs.Rte.TableView extends Backbone.View
     @$content.find("#{type}[name=\"#{name}\"]")
 
   remove: ->
-    @detach_events()
+    return if @$link.length == 0
+    @$link.off 'click', @show
+    @$content.off 'click', '.apply',  @apply
+    @$content.off 'click', '.cancel', @hide
     @$link.popover('destroy')
-    @$('.popover').remove()
-

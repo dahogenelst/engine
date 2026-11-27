@@ -46,7 +46,6 @@ module Locomotive
         locomotive/bootstrap-colorpicker/alpha.png
         locomotive/bootstrap-colorpicker/hue-horizontal.png
         locomotive/bootstrap-colorpicker/hue.png
-        locomotive/wysihtml5_reset.css
         locomotive/wysihtml5_editor.css
         locomotive.js
         locomotive.css
