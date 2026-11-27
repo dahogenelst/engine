@@ -28,11 +28,6 @@ module Locomotive
       ui:                     {
         per_page:     10
       },
-      rack_cache:             {
-        verbose:      true,
-        metastore:    ERB::Util.url_encode("file:#{Rails.root}/tmp/dragonfly/cache/meta"), # URI encoded in case of spaces
-        entitystore:  ERB::Util.url_encode("file:#{Rails.root}/tmp/dragonfly/cache/body")
-      },
       devise_modules:               [:registerable, :rememberable, :database_authenticatable, :recoverable, :trackable, :validatable, :encryptable, { encryptor: :sha1 }],
       steam_image_resizer_secret:   'please change it'
     }

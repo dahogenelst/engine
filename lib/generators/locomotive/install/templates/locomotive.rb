@@ -53,17 +53,6 @@ Locomotive.configure do |config|
   #
   # config.theme_assets_checksum = true
 
-  # Rack-cache settings, mainly used for the inline resizing image module. Default options:
-  # config.rack_cache = {
-  #   verbose:     true,
-  #   metastore:   URI.encode("file:#{Rails.root}/tmp/dragonfly/cache/meta"), # URI encoded in case of spaces
-  #   entitystore: URI.encode("file:#{Rails.root}/tmp/dragonfly/cache/body")
-  # }
-  # If you do want to disable it for good, just use the following syntax
-  # config.rack_cache = false
-  #
-  # Note: by default, rack/cache is disabled in the Heroku platform
-
   # Dragonfly within Steam uses it to generate the protective SHA
   # config.steam_image_resizer_secret = 'please change it'
 

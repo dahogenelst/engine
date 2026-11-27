@@ -61,7 +61,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'carrierwave-mongoid',             '~> 1.6'
   s.add_dependency 'dragonfly',                       '~> 1.4'
-  s.add_dependency 'rack-cache',                      '~> 1.14'
 
   s.add_dependency 'multi_json',                      '~> 1.15'
   s.add_dependency 'yajl-ruby',                       '~> 1.4'
