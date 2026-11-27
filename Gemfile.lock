@@ -91,7 +91,6 @@ PATH
       mongo (~> 2.21)
       mongoid (~> 9.0)
       mongoid-tree (~> 2.2)
-      multi_json (~> 1.15)
       origin (~> 2.3)
       public_suffix (>= 4)
       pundit (~> 2.3)
@@ -104,7 +103,6 @@ PATH
       simple_token_authentication (~> 1.18)
       slim (~> 5.0)
       sprockets-rails (~> 3.4)
-      yajl-ruby (~> 1.4)
 
 GEM
   remote: https://rubygems.org/
@@ -597,7 +595,6 @@ GEM
     websocket-extensions (0.2.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    yajl-ruby (1.4.3)
     zeitwerk (2.8.3)
 
 PLATFORMS
