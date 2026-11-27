@@ -20,6 +20,30 @@ describe Locomotive::ContentAsset do
 
   end
 
+  describe 'type of the file' do
+
+    before { allow_any_instance_of(Locomotive::ContentAsset).to receive(:site_id).and_return('test') }
+
+    def type_of(name, bytes)
+      path = File.join(FixturedAsset.path('..'), '..', 'tmp', name)
+      File.binwrite(path, bytes + "\0" * 64)
+      build(:asset, source: File.new(path)).tap(&:valid?).content_type
+    end
+
+    it 'knows a font by its content' do
+      { 'a.woff2' => 'wOF2', 'a.woff' => 'wOFF', 'a.otf' => 'OTTO', 'a.ttf' => "\0\1\0\0" }.each do |name, bytes|
+        expect(type_of(name, bytes)).to eq('font'), name
+      end
+    end
+
+    it 'falls back on the name of the file when the content says nothing' do
+      expect(type_of('a.eot', 'xx')).to eq 'font'
+      expect(type_of('b.woff2', 'zz')).to eq 'font'
+      expect(type_of('a.qqq', "\x01\x02")).to eq 'other'
+    end
+
+  end
+
   describe 'vignette' do
 
     let(:asset) { build(:asset, source: FixturedAsset.open('5k.png')) }
