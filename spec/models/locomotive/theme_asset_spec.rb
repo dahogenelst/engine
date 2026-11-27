@@ -8,6 +8,22 @@ describe Locomotive::ThemeAsset do
   let(:source)  { nil }
   let(:asset)   { build(:theme_asset, site: site, source: source, updated_at: DateTime.parse('2007/06/29 21:10:00')) }
 
+  describe 'moving to another folder' do
+
+    let(:site) { create(:site, domains: %w{www.acme.com}) }
+
+    it 'moves the file and keeps its type' do
+      asset = create(:theme_asset, site: site, source: FixturedAsset.open('main.css'), folder: 'stylesheets')
+      asset = Locomotive::ThemeAsset.find(asset._id)
+      asset.update!(folder: 'stylesheets/v2')
+      asset = Locomotive::ThemeAsset.find(asset._id)
+      expect(asset.local_path).to eq 'stylesheets/v2/main.css'
+      expect(asset.source.file.exists?).to eq true
+      expect(asset.content_type.to_s).to eq 'stylesheet'
+    end
+
+  end
+
   describe 'attaching a file' do
 
     describe 'file is a picture' do
