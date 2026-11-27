@@ -59,6 +59,7 @@ module Locomotive
   end
 
   def self.mounted_on
+    Rails.application.reload_routes_unless_loaded # lazy in development (Rails 8), asked by middlewares before the router
     Rails.application.routes.named_routes[:locomotive].path.spec.to_s
   end
 
