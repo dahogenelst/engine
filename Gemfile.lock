@@ -66,7 +66,6 @@ PATH
   specs:
     locomotivecms (4.2.0.alpha2)
       actionmailer-with-request (~> 0.5)
-      adomain (~> 0.2)
       autoprefixer-rails (~> 10.4)
       bazaar (~> 0.0)
       bootstrap-kaminari-views (~> 0.0)
@@ -94,6 +93,7 @@ PATH
       mongoid-tree (~> 2.2)
       multi_json (~> 1.15)
       origin (~> 2.3)
+      public_suffix (>= 4)
       pundit (~> 2.3)
       rails (>= 8.0, < 9)
       rails-html-sanitizer (~> 1.6)
@@ -189,9 +189,6 @@ GEM
       uri (>= 0.13.1)
     addressable (2.10.0)
       public_suffix (>= 2.0.2, < 8.0)
-    adomain (0.2.4)
-      addressable (~> 2.5)
-      logger
     ast (2.4.3)
     attr_extras (7.1.0)
     autoprefixer-rails (10.6.1.0)
