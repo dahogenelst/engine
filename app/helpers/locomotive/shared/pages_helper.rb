@@ -61,10 +61,6 @@ module Locomotive
 
         def_delegators :page, :_id, :parent, :title, :index_or_not_found?, :published?, :templatized?, :translated?, :redirect?, :response_type, :depth
 
-        def fold_state
-          controller.send(:cookies)["node-#{_id}"] != 'unfolded' ? 'folded' : 'unfolded'
-        end
-
         def nodes
           children.map do |(child, children)|
             self.class.new(child, children, controller)
