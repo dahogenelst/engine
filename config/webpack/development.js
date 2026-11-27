@@ -2,10 +2,13 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  entry: './app/javascript/src/locomotive/editor.es6',
+  entry: {
+    editor:    './app/javascript/src/locomotive/editor.es6',   // the section editor (page content)
+    rich_text: './app/javascript/src/locomotive/rich_text.es6' // the rich text inputs of the back-office
+  },
   output: {
     path: path.resolve(__dirname, '..', '..', 'app', 'assets'),
-    filename: 'javascripts/locomotive/editor.js'
+    filename: 'javascripts/locomotive/[name].js'
   },
   module: {
     rules: [

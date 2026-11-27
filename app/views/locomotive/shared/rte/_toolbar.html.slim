@@ -1,107 +1,93 @@
-.wysihtml5-toolbar id="wysihtml5-toolbar-#{wysihtml5_prefix}" style='display: none'
+.rte-toolbar
 
-  span.wysihtml5-toolbar-group
-    a data-wysihtml5-command='formatInline' data-wysihtml5-command-value='strong'
+  span.rte-toolbar-group
+    a data-command='bold'
       i.fa.fa-bold
-    a data-wysihtml5-command='italic'
+    a data-command='italic'
       i.fa.fa-italic
-    a data-wysihtml5-command='underline'
+    a data-command='underline'
       i.fa.fa-underline
-    a data-wysihtml5-command='strike'
+    a data-command='strike'
       i.fa.fa-strikethrough
 
   - unless inline
-    span.wysihtml5-toolbar-group
-      a data-wysihtml5-command='justifyLeft'
+    span.rte-toolbar-group
+      a data-command='align' data-value='left'
         i.fa.fa-align-left
-      a data-wysihtml5-command='justifyCenter'
+      a data-command='align' data-value='center'
         i.fa.fa-align-center
-      a data-wysihtml5-command='justifyRight'
+      a data-command='align' data-value='right'
         i.fa.fa-align-right
-      a data-wysihtml5-command='justifyFull'
+      a data-command='align' data-value='justify'
         i.fa.fa-align-justify
 
-    span.wysihtml5-toolbar-group
-      a data-wysihtml5-command='insertUnorderedList'
+    span.rte-toolbar-group
+      a data-command='bullets'
         i.fa.fa-list-ul
-      a data-wysihtml5-command='insertOrderedList'
+      a data-command='numbers'
         i.fa.fa-list-ol
       a.style
         i.fa.fa-paragraph
 
-      .style-dialog-content style='display: none'
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='h1' H1
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='h2' H2
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='h3' H3
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='h4' H4
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='h5' H5
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='h6' H6
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='p' P
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='blockquote'
+      .dialog-content style='display: none'
+        - %w(h1 h2 h3 h4 h5 h6 p).each do |name|
+          a data-command='block' data-value=name = name.upcase
+          | &nbsp;
+        a data-command='block' data-value='blockquote'
           i.fa.fa-quote-right
         | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='code'
-          | Code
-        | &nbsp;
-        a data-wysihtml5-command='formatBlock' data-wysihtml5-command-value='pre'
-          | Pre
+        a data-command='block' data-value='pre' Pre
 
-  span.wysihtml5-toolbar-group
-    a data-wysihtml5-command='createLink'
+  span.rte-toolbar-group
+    a.link
       i.fa.fa-link
     = link_popover
-    a data-wysihtml5-command='removeLink'
+    a data-command='unlink'
       i.fa.fa-unlink
 
-    a data-url=content_assets_path(types: 'image') data-wysihtml5-command='insertImage'
+    a.image data-url=content_assets_path(types: 'image')
       i.far.fa-image
     = image_popover
 
-    a data-url=content_assets_path data-wysihtml5-command='insertFile'
+    a.file data-url=content_assets_path
       i.fa.fa-paperclip
-    = image_popover
 
     - unless inline
-      a data-wysihtml5-command='createTable'
+      a.table
         i.fa.fa-table
       = table_popover
 
-      a data-wysihtml5-hiddentools='table' class="edit-table" style="display: none"
+      a.edit-table style="display: none"
         i.fa.fa-table
 
-      .table-dialog-content style='display: none'
-        a data-wysihtml5-command="mergeTableCells" unselectable="on"
+      .dialog-content style='display: none'
+        a data-command="mergeCells"
           = t('.table.merge')
         br
-        a data-wysihtml5-command="addTableCells" data-wysihtml5-command-value="above" unselectable="on"
+        a data-command="addRowBefore"
           = t('.table.insert_row_before')
         br
-        a data-wysihtml5-command="addTableCells" data-wysihtml5-command-value="below"
+        a data-command="addRowAfter"
           = t('.table.insert_row_after')
         br
-        a data-wysihtml5-command="addTableCells" data-wysihtml5-command-value="before" unselectable="on"
+        a data-command="addColumnBefore"
           = t('.table.insert_col_before')
         br
-        a data-wysihtml5-command="addTableCells" data-wysihtml5-command-value="after" unselectable="on"
+        a data-command="addColumnAfter"
           = t('.table.insert_col_after')
         br
-        a data-wysihtml5-command="deleteTableCells" data-wysihtml5-command-value="row" unselectable="on"
+        a data-command="deleteRow"
           = t('.table.delete_row')
         br
-        a data-wysihtml5-command="deleteTableCells" data-wysihtml5-command-value="column" unselectable="on"
+        a data-command="deleteColumn"
           = t('.table.delete_col')
 
-  span.wysihtml5-toolbar-group
+  span.rte-toolbar-group
     - unless inline
       a.expand
         i.fa.fa-expand
-    a data-wysihtml5-action='change_view'
+    a.source
       i.fa.fa-code
 
+.rte-source-notice style='display: none'
+  = t('.source_notice', default: 'The editor would change the HTML of this text, so it is shown as source. Click </> to edit it visually anyway.')

@@ -262,4 +262,22 @@ export const roundtrip = (html, options) =>
   toStoredHtml(generateHTML(generateJSON(toEditorHtml(html), extensions), extensions), options);
 
 // Can the editor open this HTML without changing it? If not, it is edited as source.
-export const keepsHtml = (html, options) => normalize(roundtrip(html, options)) === normalize(html);
+export const keepsHtml = (html, options) => !html.trim() || normalize(roundtrip(html, options)) === normalize(html);
+
+// HTML edited as source is stored as typed, except what runs a script: <script>, on* handlers and
+// javascript: urls. HTML without them is returned as is (not even reserialized).
+const SCRIPT_URL = /^[\u0000- ]*j[\s]*a[\s]*v[\s]*a[\s]*s[\s]*c[\s]*r[\s]*i[\s]*p[\s]*t[\s]*:/i;
+export const sanitize = html => {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  let changed = false;
+  template.content.querySelectorAll('script').forEach(script => { script.remove(); changed = true; });
+  template.content.querySelectorAll('*').forEach(element =>
+    Array.from(element.attributes).forEach(({ name, value }) => {
+      if (name.startsWith('on') || (/^(href|src|action|formaction|xlink:href)$/.test(name) && SCRIPT_URL.test(value))) {
+        element.removeAttribute(name);
+        changed = true;
+      }
+    }));
+  return changed ? template.innerHTML : html;
+};

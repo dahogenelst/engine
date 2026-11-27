@@ -10,7 +10,6 @@ module Locomotive
       template.render(
         partial:  'locomotive/shared/rte/markdown_toolbar',
         locals:   {
-          wysihtml5_prefix: wysihtml5_prefix,
           image_popover:    image_popover,
         })
     end

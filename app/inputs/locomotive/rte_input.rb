@@ -12,17 +12,11 @@ module Locomotive
       template.render(
         partial:  'locomotive/shared/rte/toolbar',
         locals:   {
-          wysihtml5_prefix: wysihtml5_prefix,
           link_popover:     link_popover,
           image_popover:    image_popover,
           table_popover:    table_popover,
           inline:           input_html_options[:data].try(:[], :inline)
         })
-    end
-
-    def wysihtml5_prefix
-      _object_name = @builder.template.send(:sanitize_to_id, object_name)
-      "#{_object_name}_#{attribute_name}"
     end
 
     def image_popover
