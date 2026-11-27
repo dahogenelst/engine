@@ -28,7 +28,7 @@ module Locomotive
           !path.starts_with?(GOOGLE_AMP_PATH + '/') &&
           !page.redirect &&
           page.response_type == 'text/html' &&
-          response.first
+          response.first&.include?('wysiwyg-') # only pages showing text styled by the editor
         end
 
       end
