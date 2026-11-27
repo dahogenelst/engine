@@ -62,8 +62,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'carrierwave-mongoid',             '~> 1.6'
   s.add_dependency 'dragonfly',                       '~> 1.4'
 
-  s.add_dependency 'multi_json',                      '~> 1.15'
-  s.add_dependency 'yajl-ruby',                       '~> 1.4'
   s.add_dependency 'actionmailer-with-request',       '~> 0.5'
   s.add_dependency 'public_suffix',                   '>= 4'
 
