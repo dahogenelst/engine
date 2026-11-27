@@ -63,7 +63,8 @@ fr:
         updated_by: "Dernière modification il y a %{distance} par %{who}"
       rte:
         toolbar:
-          source_notice: "L'éditeur modifierait le HTML de ce texte, il est donc affiché en source. Cliquez sur </> pour l'éditer visuellement malgré tout."
+          source_notice: "Ce texte contient du HTML que l'éditeur modifierait, il est donc affiché en source. L'enregistrer le garde tel quel."
+          source_notice_edit: "Éditer visuellement malgré tout"
           table:
             merge: Fusionner
             insert_row_before: Insérer la ligne avant

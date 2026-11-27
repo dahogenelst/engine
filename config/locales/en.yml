@@ -65,7 +65,8 @@ en:
         updated_by: "Last modified %{distance} ago by %{who}"
       rte:
         toolbar:
-          source_notice: "The editor would change the HTML of this text, so it is shown as source. Click </> to edit it visually anyway."
+          source_notice: "This text contains HTML the editor would change, so it is shown as source. Saving keeps it as it is."
+          source_notice_edit: "Edit visually anyway"
           table:
             merge: Merge
             insert_row_before: Insert row before
