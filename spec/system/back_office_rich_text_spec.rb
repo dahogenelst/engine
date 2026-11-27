@@ -188,9 +188,14 @@ describe 'The rich text editor of the back-office', js: true do
     pick_asset 'file', pdf
     in_editor { expect(page).to have_css("a[href='#{pdf.source.url}']") }
 
+    type :end
+    pick_asset 'file', image # a link to the image, not the image
+    in_editor { expect(page).to have_css("a[href='#{image.source.url}']") }
+
     body = save_entry
     expect(body).to include(%{src="#{image.source.url}"})
     expect(body).to include(%{href="#{pdf.source.url}"})
+    expect(body).to include(%{href="#{image.source.url}"})
   end
 
   it 'edits the HTML source, cleaned like the rest' do
