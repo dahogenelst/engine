@@ -6,6 +6,7 @@ Locomotive.Views.Inputs.Rte ||= {}
 class Locomotive.Views.Inputs.Rte.FileView extends Backbone.View
 
   button: '.rte-toolbar a.file'
+  images: false # the paperclip links to any file, an image too
 
   initialize: ->
     _.bindAll(@, 'show', 'insert_file')
@@ -26,7 +27,7 @@ class Locomotive.Views.Inputs.Rte.FileView extends Backbone.View
   insert_file: (msg, data) ->
     return unless data.parent_view.cid == @.cid
 
-    if data.image
+    if @images
       @rte.image(src: data.url, title: data.title, alt: data.alt)
     else
       @rte.file(url: data.url, title: data.title)

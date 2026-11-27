@@ -6,6 +6,7 @@ Locomotive.Views.Inputs.Rte ||= {}
 class Locomotive.Views.Inputs.Rte.ImageView extends Locomotive.Views.Inputs.Rte.FileView
 
   button: '.rte-toolbar a.image'
+  images: true
 
   initialize: ->
     super()
