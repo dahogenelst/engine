@@ -3,7 +3,7 @@ Locomotive.Views.Inputs.Rte ||= {}
 class Locomotive.Views.Inputs.Rte.TableView extends Backbone.View
 
   initialize: ->
-    _.bindAll(@, 'apply', 'show', 'hide')
+    _.bindAll(@, 'apply', 'apply_on_enter', 'show', 'hide')
 
     @rte      = @options.rte
     @$link    = @$('.rte-toolbar a.table')
@@ -26,6 +26,10 @@ class Locomotive.Views.Inputs.Rte.TableView extends Backbone.View
     @$link.on 'click', @show
     @$content.on 'click', '.apply',  @apply
     @$content.on 'click', '.cancel', @hide
+    @$content.on 'keydown', 'input', @apply_on_enter
+
+  apply_on_enter: (event) ->
+    @apply(event) if event.key == 'Enter'
 
   apply: (event) ->
     event.preventDefault()
@@ -56,4 +60,5 @@ class Locomotive.Views.Inputs.Rte.TableView extends Backbone.View
     @$link.off 'click', @show
     @$content.off 'click', '.apply',  @apply
     @$content.off 'click', '.cancel', @hide
+    @$content.off 'keydown', 'input', @apply_on_enter
     @$link.popover('destroy')

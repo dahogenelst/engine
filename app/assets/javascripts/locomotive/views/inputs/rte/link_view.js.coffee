@@ -5,7 +5,7 @@ class Locomotive.Views.Inputs.Rte.LinkView extends Backbone.View
   isOpen: false
 
   initialize: ->
-    _.bindAll(@, 'apply', 'show', 'hide')
+    _.bindAll(@, 'apply', 'apply_on_enter', 'show', 'hide')
 
     @rte        = @options.rte
     @$link      = @$('.rte-toolbar a.link')
@@ -31,11 +31,16 @@ class Locomotive.Views.Inputs.Rte.LinkView extends Backbone.View
     @$link.on 'click', @show
     @$content.on 'click', '.apply', @apply
     @$content.on 'click', '.cancel', @hide
+    @$content.on 'keydown', 'input', @apply_on_enter
 
   detach_events: ->
     @$link.off 'click', @show
     @$content.off 'click', '.apply', @apply
     @$content.off 'click', '.cancel', @hide
+    @$content.off 'keydown', 'input', @apply_on_enter
+
+  apply_on_enter: (event) ->
+    @apply(event) if event.key == 'Enter'
 
   apply: (event) ->
     event.preventDefault()

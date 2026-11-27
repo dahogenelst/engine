@@ -153,7 +153,7 @@ describe 'The rich text editor of the back-office', js: true do
       find('[name="rte_input_link_form[url]"]').set('https://example.com')
       find('[name="rte_input_link_form[target]"]').find('option[value="_blank"]').select_option
       find('[name="rte_input_link_form[title]"]').set('Example')
-      find('.apply').click
+      find('[name="rte_input_link_form[title]"]').send_keys(:enter) # like clicking Apply
     end
     in_editor { expect(page).to have_css('a', text: 'Hello') }
 
