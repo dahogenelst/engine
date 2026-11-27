@@ -33,7 +33,7 @@ module Locomotive
 
           # https://github.com/carrierwaveuploader/carrierwave/issues/2424
           if content_type.blank? || ['application/octet-stream', 'invalid/invalid'].include?(content_type)
-            content_type = File.mime_type?(original_filename)
+            content_type = ::Marcel::MimeType.for(name: original_filename)
           end
 
           value = find_content_type_of_model(content_type)

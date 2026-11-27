@@ -97,7 +97,7 @@ module Locomotive
         # a simple way to rename a file
         old_asset         = self.class.where(_id: self._id).first # bypass memoization by mongoid
         file              = old_asset.source.file
-        file.content_type = File.mime_type?(file.path) if file.content_type.nil?
+        file.content_type = ::Marcel::MimeType.for(name: file.path) if file.content_type.nil?
         self.source       = file
         self.changed_attributes['source_filename'] = nil # delete the old file
       end
