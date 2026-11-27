@@ -10,7 +10,7 @@ class Locomotive.Views.Inputs.Rte.ImageView extends Locomotive.Views.Inputs.Rte.
 
   initialize: ->
     super()
-    _.bindAll(@, 'apply', 'hide_popover')
+    _.bindAll(@, 'apply', 'apply_on_enter', 'hide_popover')
     @$popover = @$link.next('.image-dialog-content')
 
   render: ->
@@ -28,6 +28,10 @@ class Locomotive.Views.Inputs.Rte.ImageView extends Locomotive.Views.Inputs.Rte.
 
     @$popover.on 'click', '.apply', @apply
     @$popover.on 'click', '.cancel', @hide_popover
+    @$popover.on 'keydown', 'input', @apply_on_enter
+
+  apply_on_enter: (event) ->
+    @apply(event) if event.key == 'Enter'
 
   show: (event) ->
     event.preventDefault()
@@ -60,5 +64,6 @@ class Locomotive.Views.Inputs.Rte.ImageView extends Locomotive.Views.Inputs.Rte.
   remove: ->
     @$popover.off 'click', '.apply', @apply
     @$popover.off 'click', '.cancel', @hide_popover
+    @$popover.off 'keydown', 'input', @apply_on_enter
     @$link.popover('destroy')
     super()
