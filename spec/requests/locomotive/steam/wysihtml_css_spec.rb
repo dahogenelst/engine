@@ -32,15 +32,23 @@ describe Locomotive::Steam::Middlewares::WysihtmlCss do
 
     describe 'head tag found' do
 
-      let(:html) { '<html><head></head><body></body></html>' }
+      let(:html) { '<html><head></head><body><p class="wysiwyg-text-align-center">Hi</p></body></html>' }
 
-      it { is_expected.to match(%r(<html><head><link rel="stylesheet" type="text/css" href="/assets/locomotive/wysihtml5_editor-[^.]+.css"></head><body></body></html>)) }
+      it { is_expected.to match(%r(<html><head><link rel="stylesheet" type="text/css" href="/assets/locomotive/wysihtml5_editor-[^.]+.css"></head><body>)) }
+
+      context 'no text styled by the editor' do
+
+        let(:html) { '<html><head></head><body><p>Hi</p></body></html>' }
+
+        it { is_expected.to eq('<html><head></head><body><p>Hi</p></body></html>') }
+
+      end
 
       context 'Google AMP page' do
 
         let(:path) { '_amp/simple' }
 
-        it { is_expected.to eq('<html><head></head><body></body></html>') }
+        it { is_expected.not_to include('wysihtml5_editor') }
 
       end
 
