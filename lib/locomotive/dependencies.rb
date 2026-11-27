@@ -28,6 +28,7 @@ require 'sanitize'
 require 'stringex'
 require 'bazaar'
 require 'csv'
+require 'public_suffix'
 require 'rails-i18n'
 require 'json-schema'
 

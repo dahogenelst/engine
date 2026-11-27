@@ -1,5 +1,3 @@
-require 'adomain'
-
 module Locomotive
   class Notifications < ActionMailer::Base
 
@@ -50,7 +48,7 @@ module Locomotive
     def fetch_from
       if from = site_mailer_settings['from']
         from
-      elsif top_level_domain = Adomain.domain(@domain)
+      elsif top_level_domain = PublicSuffix.domain(@domain, ignore_private: true)
         "noreply@#{top_level_domain}"
       else
         Locomotive.config.mailer_sender

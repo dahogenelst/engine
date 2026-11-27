@@ -62,6 +62,24 @@ describe Locomotive::Notifications do
 
     end
 
+    context 'the main domain is a subdomain under a public suffix' do
+
+      let(:domains) { %w{shop.acme.co.uk} }
+
+      it 'sends from the registered domain' do
+        expect(mail.from).to eq(['noreply@acme.co.uk'])
+      end
+
+    end
+
+    context 'the site has no domain' do
+
+      it 'sends from the mailer sender of the configuration' do
+        expect(mail.from).to eq([Locomotive.config.mailer_sender])
+      end
+
+    end
+
     context 'the site has metafields describing a SMTP server' do
 
       let(:metafields) { { 'mailer_settings' => {
