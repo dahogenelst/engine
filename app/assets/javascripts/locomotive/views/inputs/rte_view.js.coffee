@@ -8,6 +8,7 @@ class Locomotive.Views.Inputs.RteView extends Backbone.View
     'click .rte-toolbar a.style':         'open_dialog'
     'click .rte-toolbar a.edit-table':    'open_dialog'
     'click .rte-toolbar a.source':        'toggle_source'
+    'click .rte-source-notice a':         'toggle_source'
     'click .rte-toolbar a.expand':        'expand'
     'dblclick .rte-content':  'edit_link'
     'change textarea':        'on_content_change' # after the source is cleaned (rich_text)

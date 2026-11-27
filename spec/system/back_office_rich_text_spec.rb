@@ -107,6 +107,13 @@ describe 'The rich text editor of the back-office', js: true do
     expect(save_entry).to eq %{<p>y</p><p style="color:red">styled</p>}
   end
 
+  it 'edits HTML it would change visually when asked' do
+    open_entry %{<p>a</p><h4><p>b</p></h4>}
+    find('.rte-source-notice a').click
+    expect(page).to have_no_css('.rte-source-notice', visible: true)
+    in_editor { expect(page).to have_text('b') }
+  end
+
   it 'makes text bold, italic, underlined and struck through' do
     open_entry '<p>Hello</p>'
     select_all

@@ -89,5 +89,8 @@
     a.source
       i.fa.fa-code
 
-.rte-source-notice style='display: none'
-  = t('.source_notice', default: 'The editor would change the HTML of this text, so it is shown as source. Click </> to edit it visually anyway.')
+.rte-source-notice.alert.alert-warning style='display: none'
+  = t('.source_notice', default: 'This text contains HTML the editor would change, so it is shown as source. Saving keeps it as it is.')
+  | &nbsp;
+  a.edit-visually href='#'
+    = t('.source_notice_edit', default: 'Edit visually anyway')
