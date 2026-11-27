@@ -136,6 +136,10 @@ const rank = (order, name) => {
   return index === -1 ? order.length : index;
 };
 
+// a list without items shows nothing; Tiptap would give it an empty (visible) item
+const removeEmptyLists = content =>
+  content.querySelectorAll('ul, ol').forEach(list => { if (!list.querySelector('li')) list.remove(); });
+
 const BLOCKS = /^(P|H[1-6]|UL|OL|LI|BLOCKQUOTE|PRE|TABLE|DIV|HR|FIGURE|ADDRESS|FORM|VIDEO)$/;
 
 // The stored HTML, ready for Tiptap: text outside a paragraph (in the content or in a div) is
@@ -143,6 +147,7 @@ const BLOCKS = /^(P|H[1-6]|UL|OL|LI|BLOCKQUOTE|PRE|TABLE|DIV|HR|FIGURE|ADDRESS|F
 export const toEditorHtml = html => {
   const template = document.createElement('template');
   template.innerHTML = html;
+  removeEmptyLists(template.content);
   [template.content, ...template.content.querySelectorAll('div')].forEach(container => {
     let paragraph = null;
     Array.from(container.childNodes).forEach(node => {
@@ -218,6 +223,7 @@ export const normalize = html => {
   while (walker.nextNode())
     if (!walker.currentNode.parentElement?.closest('pre'))
       walker.currentNode.textContent = walker.currentNode.textContent.replace(/[ \t\n\r\f]+/g, ' ');
+  removeEmptyLists(template.content);
   template.innerHTML = template.innerHTML.replace(SPACES_AROUND, '$1').trim();
   template.content.querySelectorAll('*').forEach(element => {
     const attributes = Array.from(element.attributes).map(({ name, value }) => [name, value]).sort();

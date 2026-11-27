@@ -88,4 +88,9 @@ describe('back-office rich text HTML', () => {
       .toBe('<p class="a">y</p><a title="t">z</a><img alt="i">');
   });
 
+  it('drops a list without items, it shows nothing', () => {
+    expect(keepsHtml('<p>a</p><ul></ul><h2>t</h2>')).toBe(true);
+    expect(roundtrip('<p>a</p><ul> </ul><h2>t</h2>')).toBe('<p>a</p><h2>t</h2>');
+  });
+
 });
