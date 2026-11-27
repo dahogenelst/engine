@@ -84,12 +84,12 @@ class Locomotive.Views.ContentAssets.EditImageView extends Backbone.View
 
     $btn = $(event.target).button('loading')
 
-    window.resizeImageStep @$cropper[0], width, height
-      .then (image) =>
+    @resize_image @$cropper.attr('src'), width, height
+      .then (src) =>
         @width  = width
         @height = height
         @cropper_enabled = true
-        @$cropper.cropper('replace', image.src)
+        @$cropper.cropper('replace', src)
         @set_cropper_height()
         $btn.button('reset')
         @toggle_resize_modal()
@@ -105,21 +105,36 @@ class Locomotive.Views.ContentAssets.EditImageView extends Backbone.View
 
     $link     = $(event.target).closest('.apply-btn')
     image_url = @$cropper.cropper('getDataURL') || @$cropper.attr('src')
-    blob      = window.dataURLtoBlob(image_url)
 
-    form_data = new FormData()
-    form_data.append('xhr', true)
-    form_data.append('content_asset[source]', blob, @filename)
+    fetch(image_url).then((response) -> response.blob()).then (blob) =>
+      form_data = new FormData()
+      form_data.append('xhr', true)
+      form_data.append('content_asset[source]', blob, @filename)
 
-    $.ajax
-      url:          $link.data('url')
-      type:         'POST'
-      data:         form_data
-      processData:  false
-      contentType:  false
-      success: (data) =>
-        @options.on_apply_callback(data) if @options.on_apply_callback?
-        @options.drawer.close()
+      $.ajax
+        url:          $link.data('url')
+        type:         'POST'
+        data:         form_data
+        processData:  false
+        contentType:  false
+        success: (data) =>
+          @options.on_apply_callback(data) if @options.on_apply_callback?
+          @options.drawer.close()
+
+  # in one step: the 'high' smoothing of the browser does what halving it step by step did
+  resize_image: (src, width, height) ->
+    new Promise (resolve) ->
+      image = new Image()
+      image.crossOrigin = 'anonymous' # keeps the canvas readable
+      image.onload = ->
+        canvas = document.createElement('canvas')
+        canvas.width  = width
+        canvas.height = height
+        context = canvas.getContext('2d')
+        context.imageSmoothingQuality = 'high'
+        context.drawImage(image, 0, 0, width, height)
+        resolve(canvas.toDataURL('image/png'))
+      image.src = src
 
   set_cropper_height: ->
     container_height = @$('.edit-assets-container').height()
