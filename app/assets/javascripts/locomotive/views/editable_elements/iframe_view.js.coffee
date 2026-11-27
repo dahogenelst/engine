@@ -25,7 +25,7 @@ class Locomotive.Views.EditableElements.IframeView extends Backbone.View
       @preview_url = @window.document.location.href
 
       if !@startup
-        History.replaceState({ live_editing: true, url: @preview_url }, '', path)
+        window.history.replaceState({ live_editing: true, url: @preview_url }, '', path)
         @options.parent_view.replace_edit_view(path)
       else
         @startup = false
